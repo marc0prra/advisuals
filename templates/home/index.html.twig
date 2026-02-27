@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ad Visuals | Photographe{% endblock %}
+
+{% block body %}
+    {# Section Hero avec effet d'image de fond #}
+    <section class="relative min-h-screen flex items-center justify-center pt-20">
+        <div class="absolute inset-0 z-0">
+            <img src="{{ asset('images/hero-bg.jpg') }}" alt="Background" class="w-full h-full object-cover opacity-20" loading="lazy" />
+            <div class="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background"></div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl font-light mb-8 text-balance leading-tight">
+                Des portraits signés, des reportages vivants, des visuels qui <span class="text-accent font-semibold">font sens</span>.
+            </h1>
+            <p class="text-lg text-muted-foreground mb-12">Photographie professionnelle pour particuliers et entreprises</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ path('app_portfolio') }}" class="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">Découvrir mon travail</a>
+                <a href="{{ path('app_devis') }}" class="px-8 py-3 border border-border hover:bg-secondary transition-colors">Obtenir un devis</a>
+            </div>
+        </div>
+    </section>
+
+    {# Projets Récents (Aperçu) #}
+    <section class="py-24 bg-background">
+        <div class="container mx-auto px-4">
+            <h2 class="font-serif text-4xl text-center mb-16">Projets Récents</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for project in projects %}
+                    <div class="group overflow-hidden border border-border hover:shadow-lg transition-shadow bg-card relative aspect-[3/4]">
+                        <img src="{{ asset(project.imagePath) }}" alt="{{ project.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white translate-y-2 group-hover:translate-y-0 transition-transform opacity-0 group-hover:opacity-100">
+                            <p class="text-xs font-medium text-accent mb-1">{{ project.category }}</p>
+                            <h3 class="font-serif text-lg font-semibold">{{ project.title }}</h3>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

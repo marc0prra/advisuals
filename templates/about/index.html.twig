@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% block title %}À propos | Ad Visuals{% endblock %}
+
+{% block body %}
+    <section class="pt-32 pb-16 bg-gradient-to-b from-secondary/20 to-background">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="font-serif text-5xl font-light mb-6">Mon Parcours</h1>
+            <p class="text-xl text-muted-foreground">Une passion devenue métier, guidée par l'authenticité et l'exigence</p>
+        </div>
+    </section>
+
+    <section class="py-16 bg-background">
+        <div class="container mx-auto px-4 max-w-6xl grid lg:grid-cols-5 gap-12">
+            <div class="lg:col-span-3 space-y-6 text-muted-foreground leading-relaxed">
+                <p class="text-lg first-letter:text-5xl first-letter:font-serif first-letter:text-accent first-letter:mr-2 first-letter:float-left">
+                    Autodidacte passionné, j'ai forgé mon regard et ma technique en me formant par moi-même...
+                </p>
+                <p>Depuis, j'ai pu collaborer sur différents projets publicitaires, notamment pour <span class="text-foreground font-medium">Adidas</span>...</p>
+            </div>
+            <div class="lg:col-span-2">
+                <div class="sticky top-24 bg-card p-6 border border-border">
+                    <p class="font-serif text-xl font-semibold mb-3 text-accent">Ma philosophie</p>
+                    <p class="text-sm text-muted-foreground italic leading-relaxed">
+                        « Polyvalent par passion, précis par exigence — vos images, sans compromis. »
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

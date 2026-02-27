@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% block title %}Simuler un devis | Ad Visuals{% endblock %}
+
+{% block body %}
+    <section class="pt-32 pb-24 bg-secondary/30">
+        <div class="container mx-auto px-4 max-w-4xl" data-controller="quote-simulator">
+            <div class="text-center mb-12">
+                <h1 class="font-serif text-5xl font-light mb-4">Simulateur de Devis</h1>
+                <p class="text-muted-foreground">Obtenez une estimation immédiate de votre projet</p>
+            </div>
+
+            <div class="bg-card p-8 border border-border shadow-sm">
+                <div class="grid gap-6">
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Type de prestation</label>
+                        <select data-quote-simulator-target="service" data-action="change->quote-simulator#calculate" class="w-full p-3 bg-background border border-border rounded-md">
+                            <option value="">Sélectionnez un type de service</option>
+                            {% for service in services %}
+                                <option value="{{ service.basePrice }}">{{ service.label }} (Base: {{ service.basePrice }}€)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Durée estimée</label>
+                        <select data-quote-simulator-target="duration" data-action="change->quote-simulator#calculate" class="w-full p-3 bg-background border border-border rounded-md">
+                            <option value="">Sélectionnez une durée</option>
+                            <option value="1">2 heures</option>
+                            <option value="1.6">4 heures</option>
+                            <option value="2.8">Journée complète</option>
+                            <option value="4">Plusieurs jours</option>
+                        </select>
+                    </div>
+
+                    {# Résultat dynamique #}
+                    <div data-quote-simulator-target="resultContainer" class="hidden mt-4 p-6 bg-accent/10 border border-accent/20 text-center">
+                        <p class="text-sm text-muted-foreground mb-2">Estimation indicative</p>
+                        <p class="font-serif text-4xl font-semibold text-accent" data-quote-simulator-target="price">0€</p>
+                    </div>
+                    
+                    {# Le formulaire de contact apparaîtra ici via JS une fois le devis calculé #}
+                    <div data-quote-simulator-target="formContainer" class="hidden mt-8 pt-8 border-t border-border">
+                         <h3 class="font-serif text-2xl font-semibold mb-6">Valider cette demande</h3>
+                         {# Intégration du formulaire Symfony ici (ex: {{ form(form) }}) #}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

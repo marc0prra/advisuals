@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block title %}Portfolio | Ad Visuals{% endblock %}
+
+{% block body %}
+    <section class="pt-32 pb-24 bg-background">
+        <div class="container mx-auto px-4">
+            <h1 class="font-serif text-5xl text-center mb-16">Mes Projets</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                {% for project in projects %}
+                    <div class="group overflow-hidden border border-border relative aspect-[4/3] bg-card">
+                        <img src="{{ asset(project.imagePath) }}" alt="{{ project.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="absolute bottom-0 p-6 text-white translate-y-4 group-hover:translate-y-0 transition-transform opacity-0 group-hover:opacity-100">
+                            <p class="text-xs text-accent mb-1">{{ project.category }}</p>
+                            <h3 class="font-serif text-xl">{{ project.title }}</h3>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted-foreground col-span-full">Aucun projet pour le moment.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
