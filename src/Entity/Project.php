@@ -6,6 +6,7 @@ use App\Repository\ProjectRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
+#[ORM\Table(name: 'project')]
 class Project
 {
     #[ORM\Id]
@@ -20,13 +21,19 @@ class Project
     private ?string $category = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $image_path = null;
+    private ?string $imagePath = null;
 
     #[ORM\Column]
-    private ?bool $is_featured = null;
+    private bool $isFeatured = false;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private \DateTimeImmutable $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->isFeatured = false;
+    }
 
     public function getId(): ?int
     {
@@ -41,7 +48,6 @@ class Project
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -53,43 +59,39 @@ class Project
     public function setCategory(string $category): static
     {
         $this->category = $category;
-
         return $this;
     }
 
     public function getImagePath(): ?string
     {
-        return $this->image_path;
+        return $this->imagePath;
     }
 
-    public function setImagePath(string $image_path): static
+    public function setImagePath(string $imagePath): static
     {
-        $this->image_path = $image_path;
-
+        $this->imagePath = $imagePath;
         return $this;
     }
 
-    public function isFeatured(): ?bool
+    public function isFeatured(): bool
     {
-        return $this->is_featured;
+        return $this->isFeatured;
     }
 
-    public function setIsFeatured(bool $is_featured): static
+    public function setIsFeatured(bool $isFeatured): static
     {
-        $this->is_featured = $is_featured;
-
+        $this->isFeatured = $isFeatured;
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
-
+        $this->createdAt = $createdAt;
         return $this;
     }
 }

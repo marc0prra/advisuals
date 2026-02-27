@@ -1,17 +1,60 @@
+{# templates/base.html.twig #}
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Bienvenue !
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+		<script src="{{ asset('fullcalendar/core/index.global.min.js') }}"></script>
+		<script src="{{ asset('fullcalendar/daygrid/index.global.min.js') }}"></script>
+		<script src="{{ asset('fullcalendar/timegrid/index.global.min.js') }}"></script>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+		{% block stylesheets %}
+
+			<link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+		{% endblock %}
+
+		{% block javascripts %}
+
+			{% block importmap %}
+				{{ importmap('app') }}
+			{% endblock %}
+		{% endblock %}
+	</head>
+
+	<body
+		class="flex min-h-screen bg-gray-50">
+
+			<div class="p-6">
+				{# === ZONE DES MESSAGES FLASH (POP-UP) === #}
+				{# Messages de Succès (Enregistrement, Modification, etc.) #}
+					{% for message in app.flashes('success') %}
+						<div class="mb-4 w-full max-w-[500px] p-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-200" role="alert"> <span class="font-bold">Succès :</span>
+						{{ message }}
+					</div>
+				{% endfor %}
+
+				{# Messages d'Erreur (Validation échouée, problème technique) #}
+				{% for message in app.flashes('error') %}
+					<div class="mb-4 w-full max-w-[500px] p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200" role="alert">
+						<span class="font-bold">Erreur :</span>
+						{{ message }}
+					</div>
+				{% endfor %}
+				
+				{% block body %}
+
+				{% endblock %}
+			</div>
+		</main>
+	</body>
 </html>
