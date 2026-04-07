@@ -1,44 +1,110 @@
+{# templates/home/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Ad Visuals | Photographe{% endblock %}
-
 {% block body %}
-    {# Section Hero avec effet d'image de fond #}
-    <section class="relative min-h-screen flex items-center justify-center pt-20">
+    {# HERO SECTION (Hero.tsx) #}
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0">
-            <img src="{{ asset('images/hero-bg.jpg') }}" alt="Background" class="w-full h-full object-cover opacity-20" loading="lazy" />
-            <div class="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background"></div>
+            <img src="{{ asset('images/hero-bg.jpg') }}" class="w-full h-full object-cover opacity-30 scale-105" alt="Background">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-[#0a0a0a]"></div>
         </div>
 
-        <div class="container mx-auto px-4 relative z-10 text-center">
-            <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl font-light mb-8 text-balance leading-tight">
-                Des portraits signés, des reportages vivants, des visuels qui <span class="text-accent font-semibold">font sens</span>.
+        <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+            <h1 class="font-serif text-5xl md:text-7xl font-light mb-8 leading-tight">
+                Des portraits signés, des reportages vivants, des visuels qui <span class="text-[#C5A059] font-semibold italic">font sens</span>.
             </h1>
-            <p class="text-lg text-muted-foreground mb-12">Photographie professionnelle pour particuliers et entreprises</p>
+            <p class="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">Photographie professionnelle pour particuliers et entreprises</p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ path('portfolio') }}" class="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">Découvrir mon travail</a>
-                <a href="{{ path('devis') }}" class="px-8 py-3 border border-border hover:bg-secondary transition-colors">Obtenir un devis</a>
+                <a href="#projets" class="px-8 py-4 bg-[#C5A059] text-black font-semibold hover:bg-[#d4b16a] transition-colors">Découvrir mon travail</a>
+                <a href="{{ path('devis') }}" class="px-8 py-4 border border-white/20 hover:bg-white/10 transition-colors">Obtenir un devis</a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-20">
+            <div class="w-6 h-10 border-2 border-white rounded-full flex justify-center p-1">
+                <div class="w-1 h-2 bg-white rounded-full"></div>
             </div>
         </div>
     </section>
 
-    {# Projets Récents (Aperçu) #}
-    <section class="py-24 bg-background">
-        <div class="container mx-auto px-4">
-            <h2 class="font-serif text-4xl text-center mb-16">Projets Récents</h2>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {# SERVICES PREVIEW (ServicesPreview.tsx) #}
+    <section id="services" class="py-24 bg-[#0d0d0d]">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="text-center mb-16">
+                <h2 class="font-serif text-4xl md:text-5xl font-light mb-4 text-[#C5A059]">Mes Services</h2>
+                <p class="text-gray-500">Une offre complète adaptée à vos besoins photographiques</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                {# Card Portrait #}
+                <div class="bg-black/40 border border-white/5 p-10 text-center hover:border-[#C5A059]/30 transition-colors">
+                    <div class="w-16 h-16 bg-[#C5A059]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </div>
+                    <h3 class="font-serif text-2xl font-semibold mb-4">Portrait</h3>
+                    <p class="text-sm text-gray-500 mb-6 italic">À partir de 250€</p>
+                    <p class="text-sm text-gray-400">Portraits en studio ou en extérieur, pour particuliers et professionnels.</p>
+                </div>
+                {# ... Répéter pour Événementiel et Commercial ... #}
+            </div>
+        </div>
+    </section>
+
+    {# PROJECTS PREVIEW (ProjectsPreview.tsx) #}
+    <section id="projets" class="py-24 bg-[#0a0a0a]">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="text-center mb-16">
+                <h2 class="font-serif text-4xl md:text-5xl font-light mb-4">Projets Récents</h2>
+                <p class="text-gray-500">Un aperçu de mes travaux les plus récents</p>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {% for project in projects %}
-                    <div class="group overflow-hidden border border-border hover:shadow-lg transition-shadow bg-card relative aspect-[3/4]">
-                        <img src="{{ asset(project.imagePath) }}" alt="{{ project.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white translate-y-2 group-hover:translate-y-0 transition-transform opacity-0 group-hover:opacity-100">
-                            <p class="text-xs font-medium text-accent mb-1">{{ project.category }}</p>
+                    <div class="group relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5">
+                        <img src="{{ asset(project.imagePath) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100" alt="{{ project.title }}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-[10px] text-[#C5A059] uppercase tracking-widest mb-1">{{ project.category }}</p>
                             <h3 class="font-serif text-lg font-semibold">{{ project.title }}</h3>
                         </div>
                     </div>
                 {% endfor %}
             </div>
+            
+            <div class="text-center mt-12">
+                <a href="{{ path('portfolio') }}" class="inline-block border border-[#C5A059] text-[#C5A059] px-10 py-3 hover:bg-[#C5A059] hover:text-black transition-all">Voir tout le portfolio</a>
+            </div>
+        </div>
+    </section>
+
+    {# TESTIMONIALS (Testimonials.tsx) #}
+    <section class="py-24 bg-[#0d0d0d]">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <h2 class="font-serif text-4xl text-center mb-16 text-[#C5A059] italic">Témoignages</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-zinc-900/50 p-8 border border-white/5">
+                    <div class="flex text-[#C5A059] mb-4">★★★★★</div>
+                    <p class="text-gray-400 italic text-sm mb-6 leading-relaxed">"Adrien a capturé notre mariage avec une sensibilité incroyable. Chaque photo raconte une histoire."</p>
+                    <div class="border-t border-white/5 pt-4">
+                        <p class="font-serif font-bold">Marie L.</p>
+                        <p class="text-xs text-gray-600">Mariée</p>
+                    </div>
+                </div>
+                {# ... Répéter Testimonials ... #}
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-[#C5A059]/5 border-y border-[#C5A059]/20">
+        <div class="container mx-auto px-4 text-center max-w-3xl">
+            <h2 class="font-serif text-4xl md:text-5xl font-light mb-8">Prêt à donner vie à votre projet ?</h2>
+            <p class="text-gray-400 mb-10 leading-relaxed text-lg italic">Discutons de votre vision et créons ensemble des images qui vous ressemblent.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ path('devis') }}" class="bg-[#C5A059] text-black px-12 py-4 font-bold hover:bg-white transition-all">Obtenir un devis gratuit</a>
+                <a href="#projets" class="border border-white/20 px-12 py-4 hover:bg-white/5 transition-all">Voir mon portfolio</a>
+            </div>
+            <p class="text-xs text-gray-500 mt-8 italic">Réponse garantie sous 24h</p>
         </div>
     </section>
 {% endblock %}
