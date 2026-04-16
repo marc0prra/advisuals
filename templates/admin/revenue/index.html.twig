@@ -1,0 +1,70 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Chiffre d'affaires — Backoffice AD Visuals{% endblock %}
+{% block page_title %}Chiffre d'affaires{% endblock %}
+
+{% block content %}
+
+{# Onglets de période #}
+<div class="flex gap-2 mb-8">
+    {% for p, label in {day: 'Aujourd\'hui', week: 'Cette semaine', month: 'Ce mois', year: 'Cette année'} %}
+        <a href="{{ path('app_admin_revenue', {period: p}) }}"
+           class="px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors
+           {% if period == p %}text-black{% else %}text-gray-400 border border-gray-700 hover:text-white{% endif %}"
+           {% if period == p %}style="background-color: #C5A059;"{% endif %}>
+            {{ label }}
+        </a>
+    {% endfor %}
+</div>
+
+{# KPI #}
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">CA Total</p>
+        <p class="text-3xl font-bold text-white">{{ stats.total | number_format(0, ',', ' ') }} €</p>
+    </div>
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Part Adrien (70%)</p>
+        <p class="text-3xl font-bold text-green-400">{{ stats.adrien | number_format(0, ',', ' ') }} €</p>
+    </div>
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Part Marco (30%)</p>
+        <p class="text-3xl font-bold text-blue-400">{{ stats.marco | number_format(0, ',', ' ') }} €</p>
+    </div>
+</div>
+
+{# Tableau des entrées #}
+<div class="rounded-xl border border-gray-800 overflow-hidden" style="background-color: #0d0d0d;">
+    <div class="px-6 py-4 border-b border-gray-800">
+        <h2 class="text-sm font-semibold text-white">Détail des revenus</h2>
+    </div>
+
+    {% if entries is empty %}
+        <div class="px-6 py-10 text-center text-gray-500 text-sm italic">Aucun revenu enregistré sur cette période.</div>
+    {% else %}
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-xs uppercase tracking-widest text-gray-500 border-b border-gray-800">
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Devis #</th>
+                    <th class="px-6 py-3">Total</th>
+                    <th class="px-6 py-3">Adrien (70%)</th>
+                    <th class="px-6 py-3">Marco (30%)</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for entry in entries %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4 text-gray-400">{{ entry.paymentDate | date('d/m/Y') }}</td>
+                        <td class="px-6 py-4 text-gray-400">#{{ entry.estimateId }}</td>
+                        <td class="px-6 py-4 font-bold text-white">{{ entry.amountTotal | number_format(0, ',', ' ') }} €</td>
+                        <td class="px-6 py-4 font-semibold text-green-400">{{ entry.shareAdrien | number_format(0, ',', ' ') }} €</td>
+                        <td class="px-6 py-4 font-semibold text-blue-400">{{ entry.shareMarco | number_format(0, ',', ' ') }} €</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+{% endblock %}

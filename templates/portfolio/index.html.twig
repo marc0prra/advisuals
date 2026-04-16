@@ -18,22 +18,23 @@
             </div>
 
             {# Filtres de galerie (Spécifications fonctionnelles : Studio, Commercial, Presse) #}
-            <div class="flex flex-wrap justify-center gap-6 mb-16 text-[10px] uppercase tracking-[0.3em] text-gray-500">
-                <button class="text-[#C5A059] border-b border-[#C5A059] pb-1">Tout</button>
-                <button class="hover:text-white transition-colors">Studio</button>
-                <button class="hover:text-white transition-colors">Commercial</button>
-                <button class="hover:text-white transition-colors">Presse</button>
-            </div>
+            <div data-controller="portfolio-filter" class="flex flex-col items-center gap-6">
+                <div class="flex flex-wrap justify-center gap-6 mb-16 text-[10px] uppercase tracking-[0.3em] text-gray-500">
+                    <button data-portfolio-filter-target="button" data-filter="Tout" data-action="click->portfolio-filter#filter" class="text-[#C5A059] border-b border-[#C5A059] pb-1 hover:text-white transition-colors">Tout</button>
+                    <button data-portfolio-filter-target="button" data-filter="Studio" data-action="click->portfolio-filter#filter" class="text-gray-500 hover:text-white transition-colors">Studio</button>
+                    <button data-portfolio-filter-target="button" data-filter="Commercial" data-action="click->portfolio-filter#filter" class="text-gray-500 hover:text-white transition-colors">Commercial</button>
+                    <button data-portfolio-filter-target="button" data-filter="Presse" data-action="click->portfolio-filter#filter" class="text-gray-500 hover:text-white transition-colors">Presse</button>
+                </div>
 
             {# Grille de projets (Cahier des charges : 1 col mobile / 3 cols desktop) #}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 max-w-7xl mx-auto w-full">
                 {% for project in projects %}
                     {# Effet de zoom au survol (group-hover:scale-105) #}
-                    <div class="group relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5">
-                        <img 
-                            src="{{ asset(project.imagePath) }}" 
-                            alt="{{ project.title }}" 
-                            class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out" 
+                    <div data-portfolio-filter-target="card" data-category="{{ project.category }}" class="group relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5">
+                        <img
+                            src="{{ project.imagePath starts with 'http' ? project.imagePath : asset(project.imagePath) }}"
+                            alt="{{ project.title }}"
+                            class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
                             loading="lazy"
                         >
                         
@@ -55,11 +56,12 @@
             </div>
 
             {# Note de bas de page (Maquette : Phrase de réassurance) #}
-            <div class="mt-20 text-center">
+            <div class="mt-20 text-center w-full">
                 <p class="text-[10px] text-gray-600 uppercase tracking-[0.5em] italic">
                     Chaque image raconte une histoire unique
                 </p>
             </div>
+            </div>{# fin portfolio-filter controller #}
         </div>
     </section>
 

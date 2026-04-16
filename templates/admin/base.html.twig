@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Backoffice — AD Visuals{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    {{ importmap('app') }}
+</head>
+<body class="font-['Poppins'] flex min-h-screen" style="background-color: #0a0a0a; color: white;">
+
+    {# Sidebar #}
+    <aside class="w-64 flex-shrink-0 flex flex-col min-h-screen border-r border-gray-800" style="background-color: #0d0d0d;">
+        <div class="px-6 py-8 border-b border-gray-800">
+            <span class="font-serif text-2xl font-bold" style="color: #C5A059;">AM</span>
+            <p class="text-gray-500 text-xs mt-1 tracking-widest uppercase">Backoffice</p>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <a href="{{ path('app_admin_dashboard') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
+               {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Dashboard
+            </a>
+
+            <a href="{{ path('app_admin_devis') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') starts with 'app_admin_devis' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
+               {% if app.request.attributes.get('_route') starts with 'app_admin_devis' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Devis
+            </a>
+
+            <a href="{{ path('app_admin_revenue') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') == 'app_admin_revenue' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
+               {% if app.request.attributes.get('_route') == 'app_admin_revenue' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Chiffre d'affaires
+            </a>
+
+            <a href="{{ path('app_admin_messages') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') == 'app_admin_messages' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
+               {% if app.request.attributes.get('_route') == 'app_admin_messages' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                Messages
+            </a>
+
+            <a href="{{ path('app_admin_admins') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') starts with 'app_admin_admins' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
+               {% if app.request.attributes.get('_route') starts with 'app_admin_admins' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Admins
+            </a>
+        </nav>
+
+        <div class="px-4 py-6 border-t border-gray-800">
+            <div class="px-3 py-2 mb-3">
+                <p class="text-xs text-gray-500">Connecté en tant que</p>
+                <p class="text-sm text-white truncate">{{ app.user ? app.user.getUserIdentifier() : '' }}</p>
+            </div>
+            <a href="{{ path('app_logout') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Se déconnecter
+            </a>
+            <a href="{{ path('home') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors mt-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                Voir le site
+            </a>
+        </div>
+    </aside>
+
+    {# Contenu principal #}
+    <main class="flex-1 flex flex-col min-h-screen overflow-auto">
+        <header class="flex items-center justify-between px-8 py-5 border-b border-gray-800" style="background-color: #0d0d0d;">
+            <h1 class="text-lg font-semibold text-white">{% block page_title %}Dashboard{% endblock %}</h1>
+            <span class="text-xs text-gray-500">AD Visuals — Administration</span>
+        </header>
+
+        <div class="flex-1 p-8">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="mb-6 px-4 py-3 rounded border text-sm
+                        {% if type == 'success' %}border-green-700 bg-green-900/30 text-green-300
+                        {% elseif type == 'error' %}border-red-700 bg-red-900/30 text-red-300
+                        {% else %}border-gray-700 bg-gray-900/30 text-gray-300{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+</body>
+</html>

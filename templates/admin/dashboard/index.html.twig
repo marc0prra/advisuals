@@ -1,0 +1,78 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard — Backoffice AD Visuals{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+{# KPI Cards #}
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Devis en attente</p>
+        <p class="text-3xl font-bold" style="color: #C5A059;">{{ pending_count }}</p>
+        <a href="{{ path('app_admin_devis') }}" class="text-xs text-gray-500 hover:text-white mt-2 inline-block">Voir les devis →</a>
+    </div>
+
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">CA du mois</p>
+        <p class="text-3xl font-bold text-white">{{ month_stats.total | number_format(0, ',', ' ') }} €</p>
+        <a href="{{ path('app_admin_revenue') }}" class="text-xs text-gray-500 hover:text-white mt-2 inline-block">Voir le CA →</a>
+    </div>
+
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Part Adrien (70%)</p>
+        <p class="text-3xl font-bold text-green-400">{{ month_stats.adrien | number_format(0, ',', ' ') }} €</p>
+    </div>
+
+    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
+        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Part Marco (30%)</p>
+        <p class="text-3xl font-bold text-blue-400">{{ month_stats.marco | number_format(0, ',', ' ') }} €</p>
+    </div>
+
+</div>
+
+{# Derniers devis #}
+<div class="rounded-xl border border-gray-800 overflow-hidden" style="background-color: #0d0d0d;">
+    <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+        <h2 class="text-sm font-semibold text-white">Dernières demandes</h2>
+        <a href="{{ path('app_admin_devis') }}" class="text-xs" style="color: #C5A059;">Voir tout →</a>
+    </div>
+
+    {% if recent_requests is empty %}
+        <div class="px-6 py-10 text-center text-gray-500 text-sm italic">Aucune demande pour l'instant.</div>
+    {% else %}
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-xs uppercase tracking-widest text-gray-500 border-b border-gray-800">
+                    <th class="px-6 py-3">Client</th>
+                    <th class="px-6 py-3">Email</th>
+                    <th class="px-6 py-3">Montant</th>
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Statut</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for req in recent_requests %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4 text-white font-medium">{{ req.clientName }}</td>
+                        <td class="px-6 py-4 text-gray-400">{{ req.clientEmail }}</td>
+                        <td class="px-6 py-4 font-semibold" style="color: #C5A059;">{{ req.totalEstimated | number_format(0, ',', ' ') }} €</td>
+                        <td class="px-6 py-4 text-gray-400">{{ req.createdAt | date('d/m/Y') }}</td>
+                        <td class="px-6 py-4">
+                            {% if req.status == 'en_attente' %}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-900/50 text-yellow-300 border border-yellow-700">En attente</span>
+                            {% elseif req.status == 'accepte' %}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-900/50 text-green-300 border border-green-700">Accepté</span>
+                            {% else %}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-700">Refusé</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+{% endblock %}

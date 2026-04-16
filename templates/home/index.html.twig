@@ -1,110 +1,433 @@
-{# templates/home/index.html.twig #}
 {% extends 'base.html.twig' %}
 
+{% block title %}Adrien Mihajlovic — Photographe{% endblock %}
+
 {% block body %}
-    {# HERO SECTION (Hero.tsx) #}
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <img src="{{ asset('images/hero-bg.jpg') }}" class="w-full h-full object-cover opacity-30 scale-105" alt="Background">
-            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-[#0a0a0a]"></div>
+
+{# ═══════════════════════════════════════════════
+   HERO — PLEIN ÉCRAN
+══════════════════════════════════════════════════ #}
+<section class="relative min-h-screen flex flex-col justify-end overflow-hidden" style="background-color: #050505;">
+
+    {# Grille décorative en fond #}
+    <div class="absolute inset-0 z-0 opacity-[0.04]"
+         style="background-image: linear-gradient(#C5A059 1px, transparent 1px), linear-gradient(90deg, #C5A059 1px, transparent 1px); background-size: 80px 80px;">
+    </div>
+
+    {# Orbes dorés flottants #}
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[140px] pointer-events-none" style="background: radial-gradient(circle, rgba(197,160,89,0.18) 0%, transparent 70%);"></div>
+    <div class="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full blur-[120px] pointer-events-none" style="background: radial-gradient(circle, rgba(197,160,89,0.10) 0%, transparent 70%);"></div>
+
+    {# Contenu principal #}
+    <div class="relative z-10 container mx-auto px-6 pb-28 pt-40 max-w-7xl">
+
+        {# Tag haut #}
+        <div class="flex items-center gap-3 mb-10">
+            <div class="w-8 h-px" style="background-color: #C5A059;"></div>
+            <span class="text-xs tracking-[0.4em] uppercase" style="color: #C5A059;">Photographe professionnel · Paris</span>
         </div>
 
-        <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
-            <h1 class="font-serif text-5xl md:text-7xl font-light mb-8 leading-tight">
-                Des portraits signés, des reportages vivants, des visuels qui <span class="text-[#C5A059] font-semibold italic">font sens</span>.
-            </h1>
-            <p class="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">Photographie professionnelle pour particuliers et entreprises</p>
-            
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="#projets" class="px-8 py-4 bg-[#C5A059] text-black font-semibold hover:bg-[#d4b16a] transition-colors">Découvrir mon travail</a>
-                <a href="{{ path('devis') }}" class="px-8 py-4 border border-white/20 hover:bg-white/10 transition-colors">Obtenir un devis</a>
+        {# Titre principal — massive typography #}
+        <h1 class="font-serif font-light leading-[0.9] tracking-tight mb-12" style="font-size: clamp(3.5rem, 10vw, 9rem);">
+            <span class="block text-white">Des images</span>
+            <span class="block" style="color: #C5A059; font-style: italic;">qui font sens.</span>
+        </h1>
+
+        <div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10">
+            <p class="text-gray-400 text-lg max-w-xl leading-relaxed">
+                Photographie commerciale, portrait et presse.<br>
+                Précision technique, sensibilité artistique.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 flex-shrink-0">
+                <a href="{{ path('portfolio') }}"
+                   class="group inline-flex items-center gap-3 px-8 py-4 font-semibold text-sm tracking-widest uppercase transition-all duration-300"
+                   style="background-color: #C5A059; color: #050505;">
+                    Découvrir mon travail
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+                <a href="{{ path('devis') }}"
+                   class="inline-flex items-center gap-3 px-8 py-4 font-semibold text-sm tracking-widest uppercase border text-white transition-all duration-300 hover:bg-white/10"
+                   style="border-color: rgba(255,255,255,0.15);">
+                    Obtenir un devis
+                </a>
             </div>
         </div>
 
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-20">
-            <div class="w-6 h-10 border-2 border-white rounded-full flex justify-center p-1">
-                <div class="w-1 h-2 bg-white rounded-full"></div>
+        {# Stats sous le titre #}
+        <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t" style="border-color: rgba(255,255,255,0.06);">
+            <div>
+                <p class="font-serif text-4xl font-bold mb-1" style="color: #C5A059;">5+</p>
+                <p class="text-xs uppercase tracking-widest text-gray-500">Années d'expérience</p>
+            </div>
+            <div>
+                <p class="font-serif text-4xl font-bold mb-1" style="color: #C5A059;">200+</p>
+                <p class="text-xs uppercase tracking-widest text-gray-500">Projets réalisés</p>
+            </div>
+            <div>
+                <p class="font-serif text-4xl font-bold mb-1" style="color: #C5A059;">50+</p>
+                <p class="text-xs uppercase tracking-widest text-gray-500">Clients satisfaits</p>
+            </div>
+            <div>
+                <p class="font-serif text-4xl font-bold mb-1" style="color: #C5A059;">∞</p>
+                <p class="text-xs uppercase tracking-widest text-gray-500">Histoires racontées</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    {# SERVICES PREVIEW (ServicesPreview.tsx) #}
-    <section id="services" class="py-24 bg-[#0d0d0d]">
-        <div class="container mx-auto px-4 max-w-6xl">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-4xl md:text-5xl font-light mb-4 text-[#C5A059]">Mes Services</h2>
-                <p class="text-gray-500">Une offre complète adaptée à vos besoins photographiques</p>
+    {# Scroll indicator #}
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30">
+        <span class="text-[9px] tracking-[0.4em] uppercase text-white">Scroll</span>
+        <div class="w-px h-12 bg-white animate-pulse"></div>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   TICKER — MARQUES
+══════════════════════════════════════════════════ #}
+<div class="py-5 border-y overflow-hidden" style="background-color: #0a0a0a; border-color: rgba(197,160,89,0.15);">
+    <div class="flex whitespace-nowrap animate-marquee" style="animation: marquee 20s linear infinite;">
+        {% set brands = ['ADIDAS', 'LACOSTE', 'VOGUE PARIS', 'FASHION WEEK', 'STUDIO PORTRAIT', 'CORPORATE', 'PRESSE', 'ÉDITO MODE', 'DIRECTION ARTISTIQUE', 'LOOKBOOK'] %}
+        {% for i in 1..3 %}
+            {% for brand in brands %}
+                <span class="mx-8 text-xs tracking-[0.4em] uppercase" style="color: #C5A059; opacity: 0.6;">{{ brand }}</span>
+                <span class="mx-4 text-gray-700">·</span>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+{# ═══════════════════════════════════════════════
+   PROJETS RÉCENTS — GRILLE ÉDITORIALE
+══════════════════════════════════════════════════ #}
+<section id="projets" class="py-28" style="background-color: #0a0a0a;">
+    <div class="container mx-auto px-6 max-w-7xl">
+
+        <div class="flex items-end justify-between mb-16">
+            <div>
+                <p class="text-xs tracking-[0.4em] uppercase mb-3" style="color: #C5A059;">Portfolio sélectif</p>
+                <h2 class="font-serif font-light" style="font-size: clamp(2rem, 5vw, 4rem); line-height: 1.1;">
+                    Projets<br><em>récents</em>
+                </h2>
             </div>
+            <a href="{{ path('portfolio') }}"
+               class="hidden md:inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors group">
+                Tout voir
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                {# Card Portrait #}
-                <div class="bg-black/40 border border-white/5 p-10 text-center hover:border-[#C5A059]/30 transition-colors">
-                    <div class="w-16 h-16 bg-[#C5A059]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"></circle></svg>
-                    </div>
-                    <h3 class="font-serif text-2xl font-semibold mb-4">Portrait</h3>
-                    <p class="text-sm text-gray-500 mb-6 italic">À partir de 250€</p>
-                    <p class="text-sm text-gray-400">Portraits en studio ou en extérieur, pour particuliers et professionnels.</p>
+        {# Grille asymétrique : grand à gauche + 2 petits à droite (en utilisant les 4 premiers projets featured) #}
+        {% set featured = projects|slice(0, 4) %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3">
+
+            {# Projet principal — large #}
+            {% if featured[0] is defined %}
+            <div class="lg:col-span-7 group relative overflow-hidden bg-zinc-900" style="aspect-ratio: 4/5;">
+                <img
+                    src="{{ featured[0].imagePath starts with 'http' ? featured[0].imagePath : asset(featured[0].imagePath) }}"
+                    alt="{{ featured[0].title }}"
+                    class="w-full h-full object-cover opacity-75 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
+                    loading="eager"
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-8">
+                    <span class="block text-[10px] uppercase tracking-[0.4em] mb-2" style="color: #C5A059;">{{ featured[0].category }}</span>
+                    <h3 class="font-serif text-2xl md:text-3xl font-light text-white">{{ featured[0].title }}</h3>
                 </div>
-                {# ... Répéter pour Événementiel et Commercial ... #}
             </div>
-        </div>
-    </section>
+            {% endif %}
 
-    {# PROJECTS PREVIEW (ProjectsPreview.tsx) #}
-    <section id="projets" class="py-24 bg-[#0a0a0a]">
-        <div class="container mx-auto px-4 max-w-6xl">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-4xl md:text-5xl font-light mb-4">Projets Récents</h2>
-                <p class="text-gray-500">Un aperçu de mes travaux les plus récents</p>
-            </div>
-
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {% for project in projects %}
-                    <div class="group relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5">
-                        <img src="{{ asset(project.imagePath) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100" alt="{{ project.title }}">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                        <div class="absolute bottom-0 left-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform">
-                            <p class="text-[10px] text-[#C5A059] uppercase tracking-widest mb-1">{{ project.category }}</p>
-                            <h3 class="font-serif text-lg font-semibold">{{ project.title }}</h3>
+            {# 3 petits projets à droite #}
+            <div class="lg:col-span-5 grid grid-rows-3 gap-3">
+                {% for i in 1..3 %}
+                    {% if featured[i] is defined %}
+                    <div class="group relative overflow-hidden bg-zinc-900">
+                        <img
+                            src="{{ featured[i].imagePath starts with 'http' ? featured[i].imagePath : asset(featured[i].imagePath) }}"
+                            alt="{{ featured[i].title }}"
+                            class="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-5">
+                            <span class="block text-[9px] uppercase tracking-[0.3em] mb-1" style="color: #C5A059;">{{ featured[i].category }}</span>
+                            <h3 class="font-serif text-base text-white">{{ featured[i].title }}</h3>
                         </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
-            
-            <div class="text-center mt-12">
-                <a href="{{ path('portfolio') }}" class="inline-block border border-[#C5A059] text-[#C5A059] px-10 py-3 hover:bg-[#C5A059] hover:text-black transition-all">Voir tout le portfolio</a>
-            </div>
-        </div>
-    </section>
 
-    {# TESTIMONIALS (Testimonials.tsx) #}
-    <section class="py-24 bg-[#0d0d0d]">
-        <div class="container mx-auto px-4 max-w-6xl">
-            <h2 class="font-serif text-4xl text-center mb-16 text-[#C5A059] italic">Témoignages</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-zinc-900/50 p-8 border border-white/5">
-                    <div class="flex text-[#C5A059] mb-4">★★★★★</div>
-                    <p class="text-gray-400 italic text-sm mb-6 leading-relaxed">"Adrien a capturé notre mariage avec une sensibilité incroyable. Chaque photo raconte une histoire."</p>
-                    <div class="border-t border-white/5 pt-4">
-                        <p class="font-serif font-bold">Marie L.</p>
-                        <p class="text-xs text-gray-600">Mariée</p>
-                    </div>
+        </div>
+
+        <div class="text-center mt-12 md:hidden">
+            <a href="{{ path('portfolio') }}"
+               class="inline-block border px-10 py-3 text-xs font-semibold uppercase tracking-widest transition-all"
+               style="border-color: #C5A059; color: #C5A059;">
+                Voir tout le portfolio
+            </a>
+        </div>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   PHILOSOPHIE — CITATION CENTRALE
+══════════════════════════════════════════════════ #}
+<section class="py-24 relative overflow-hidden" style="background-color: #080808;">
+    <div class="absolute inset-0 opacity-5"
+         style="background: radial-gradient(ellipse at center, #C5A059 0%, transparent 65%);">
+    </div>
+    <div class="container mx-auto px-6 max-w-4xl text-center relative z-10">
+        <div class="w-12 h-px mx-auto mb-10" style="background-color: #C5A059;"></div>
+        <blockquote class="font-serif font-light italic leading-snug text-white" style="font-size: clamp(1.5rem, 4vw, 2.5rem);">
+            "Polyvalent par passion, précis par exigence —<br>
+            <span style="color: #C5A059;">vos images, sans compromis.</span>"
+        </blockquote>
+        <div class="w-12 h-px mx-auto mt-10 mb-8" style="background-color: #C5A059;"></div>
+        <p class="text-gray-500 text-sm tracking-widest uppercase">Adrien Mihajlovic</p>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   SERVICES — 3 COLONNES
+══════════════════════════════════════════════════ #}
+<section id="services" class="py-28" style="background-color: #0d0d0d;">
+    <div class="container mx-auto px-6 max-w-7xl">
+
+        <div class="flex items-end justify-between mb-16">
+            <div>
+                <p class="text-xs tracking-[0.4em] uppercase mb-3" style="color: #C5A059;">Ce que je propose</p>
+                <h2 class="font-serif font-light" style="font-size: clamp(2rem, 5vw, 4rem); line-height: 1.1;">
+                    Mes<br><em>services</em>
+                </h2>
+            </div>
+            <a href="{{ path('services') }}"
+               class="hidden md:inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors group">
+                Toute l'offre
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-px" style="background-color: rgba(255,255,255,0.05);">
+
+            {# Portrait & Studio #}
+            <div class="group p-10 transition-colors duration-300 hover:bg-[#C5A059]/5" style="background-color: #0d0d0d;">
+                <div class="mb-8">
+                    <span class="font-serif text-5xl font-light opacity-20 text-white">01</span>
                 </div>
-                {# ... Répéter Testimonials ... #}
+                <h3 class="font-serif text-2xl mb-3 text-white">Portrait<br><em>& Studio</em></h3>
+                <p class="text-3xl font-bold mb-6" style="color: #C5A059;">250 <span class="text-base font-normal text-gray-500">€ / séance</span></p>
+                <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                    Lumière maîtrisée, retouche haut de gamme. Portraits professionnels, artistiques ou éditoriaux.
+                </p>
+                <ul class="space-y-2 text-xs text-gray-500 mb-10">
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Séance 2h en studio</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> 10 photos retouchées</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Livraison HD sous 7 jours</li>
+                </ul>
+                <a href="{{ path('devis') }}"
+                   class="inline-block text-xs font-bold uppercase tracking-widest border-b pb-px transition-colors"
+                   style="border-color: #C5A059; color: #C5A059;">
+                    Demander un devis
+                </a>
             </div>
-        </div>
-    </section>
 
-    <section class="py-24 bg-[#C5A059]/5 border-y border-[#C5A059]/20">
-        <div class="container mx-auto px-4 text-center max-w-3xl">
-            <h2 class="font-serif text-4xl md:text-5xl font-light mb-8">Prêt à donner vie à votre projet ?</h2>
-            <p class="text-gray-400 mb-10 leading-relaxed text-lg italic">Discutons de votre vision et créons ensemble des images qui vous ressemblent.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ path('devis') }}" class="bg-[#C5A059] text-black px-12 py-4 font-bold hover:bg-white transition-all">Obtenir un devis gratuit</a>
-                <a href="#projets" class="border border-white/20 px-12 py-4 hover:bg-white/5 transition-all">Voir mon portfolio</a>
+            {# Shooting Commercial — highlight card #}
+            <div class="group p-10 relative border-x" style="background-color: #0d0d0d; border-color: rgba(197,160,89,0.2);">
+                <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, #C5A059, transparent);"></div>
+                <div class="mb-8">
+                    <span class="font-serif text-5xl font-light opacity-20 text-white">02</span>
+                </div>
+                <h3 class="font-serif text-2xl mb-3 text-white">Shooting<br><em>Commercial</em></h3>
+                <p class="text-3xl font-bold mb-6" style="color: #C5A059;">500 <span class="text-base font-normal text-gray-500">€ / jour</span></p>
+                <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                    Campagnes, lookbooks, catalogues. Direction artistique complète adaptée à votre identité de marque.
+                </p>
+                <ul class="space-y-2 text-xs text-gray-500 mb-10">
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Journée de shooting (8h)</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> 30+ photos livrées</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Direction artistique incluse</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Utilisation commerciale</li>
+                </ul>
+                <a href="{{ path('devis') }}"
+                   class="inline-block text-xs font-bold uppercase tracking-widest border-b pb-px transition-colors"
+                   style="border-color: #C5A059; color: #C5A059;">
+                    Demander un devis
+                </a>
             </div>
-            <p class="text-xs text-gray-500 mt-8 italic">Réponse garantie sous 24h</p>
+
+            {# Reportage & Presse #}
+            <div class="group p-10 transition-colors duration-300 hover:bg-[#C5A059]/5" style="background-color: #0d0d0d;">
+                <div class="mb-8">
+                    <span class="font-serif text-5xl font-light opacity-20 text-white">03</span>
+                </div>
+                <h3 class="font-serif text-2xl mb-3 text-white">Reportage<br><em>& Presse</em></h3>
+                <p class="text-3xl font-bold mb-6" style="color: #C5A059;">400 <span class="text-base font-normal text-gray-500">€ / jour</span></p>
+                <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                    Fashion weeks, événements, backstages. Réactivité et discrétion pour vos besoins éditoriaux.
+                </p>
+                <ul class="space-y-2 text-xs text-gray-500 mb-10">
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Accréditation presse</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Livraison 24h</li>
+                    <li class="flex items-center gap-2"><span style="color: #C5A059;">—</span> Droits éditoriaux inclus</li>
+                </ul>
+                <a href="{{ path('devis') }}"
+                   class="inline-block text-xs font-bold uppercase tracking-widest border-b pb-px transition-colors"
+                   style="border-color: #C5A059; color: #C5A059;">
+                    Demander un devis
+                </a>
+            </div>
+
         </div>
-    </section>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   BANDE CLIENTS
+══════════════════════════════════════════════════ #}
+<section class="py-16 border-y" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.04);">
+    <div class="container mx-auto px-6 max-w-5xl">
+        <p class="text-center text-xs tracking-[0.4em] uppercase text-gray-600 mb-10">Ils m'ont fait confiance</p>
+        <div class="flex flex-wrap items-center justify-center gap-x-16 gap-y-6">
+            {% for brand in ['ADIDAS', 'LACOSTE', 'VOGUE', 'LE MONDE', 'FIGARO MAGAZINE', 'MARIE CLAIRE'] %}
+                <span class="font-serif text-lg font-bold tracking-widest text-gray-600 hover:text-gray-300 transition-colors cursor-default" style="letter-spacing: 0.2em;">{{ brand }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   TÉMOIGNAGES
+══════════════════════════════════════════════════ #}
+<section class="py-28" style="background-color: #080808;">
+    <div class="container mx-auto px-6 max-w-7xl">
+
+        <div class="text-center mb-16">
+            <p class="text-xs tracking-[0.4em] uppercase mb-3" style="color: #C5A059;">Ce qu'ils disent</p>
+            <h2 class="font-serif font-light text-4xl text-white"><em>Témoignages</em></h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+
+            <div class="p-8 border" style="background-color: #0d0d0d; border-color: rgba(255,255,255,0.06);">
+                <div class="flex gap-1 mb-6" style="color: #C5A059;">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+                <p class="text-gray-300 text-sm leading-relaxed mb-8 italic">
+                    "Adrien a capturé notre campagne avec une justesse rare. Chaque image est un argument de vente à elle seule. Nous retravaillerons ensemble sans hésitation."
+                </p>
+                <div class="border-t pt-6" style="border-color: rgba(255,255,255,0.06);">
+                    <p class="font-serif font-bold text-white">Thomas R.</p>
+                    <p class="text-xs text-gray-600 mt-1">Directeur Artistique — Agence R&Co</p>
+                </div>
+            </div>
+
+            <div class="p-8 border relative" style="background-color: #0d0d0d; border-color: rgba(197,160,89,0.2);">
+                <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, #C5A059, transparent);"></div>
+                <div class="flex gap-1 mb-6" style="color: #C5A059;">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+                <p class="text-gray-300 text-sm leading-relaxed mb-8 italic">
+                    "Le meilleur photographe avec qui j'ai travaillé. Une vision artistique forte, une organisation impeccable, et des résultats qui dépassent systématiquement les attentes."
+                </p>
+                <div class="border-t pt-6" style="border-color: rgba(255,255,255,0.06);">
+                    <p class="font-serif font-bold text-white">Clara F.</p>
+                    <p class="text-xs text-gray-600 mt-1">Rédactrice en chef — Vogue Paris</p>
+                </div>
+            </div>
+
+            <div class="p-8 border" style="background-color: #0d0d0d; border-color: rgba(255,255,255,0.06);">
+                <div class="flex gap-1 mb-6" style="color: #C5A059;">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+                <p class="text-gray-300 text-sm leading-relaxed mb-8 italic">
+                    "Mon portrait corporate a transformé ma présence LinkedIn. Adrien sait créer une image qui reflète exactement qui vous êtes. Professionnel et humain."
+                </p>
+                <div class="border-t pt-6" style="border-color: rgba(255,255,255,0.06);">
+                    <p class="font-serif font-bold text-white">Sophie M.</p>
+                    <p class="text-xs text-gray-600 mt-1">CEO — Agence Paris</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   PROCESSUS EN 3 ÉTAPES
+══════════════════════════════════════════════════ #}
+<section class="py-24 border-t" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.04);">
+    <div class="container mx-auto px-6 max-w-5xl">
+        <div class="text-center mb-16">
+            <p class="text-xs tracking-[0.4em] uppercase mb-3" style="color: #C5A059;">Comment ça marche</p>
+            <h2 class="font-serif font-light text-4xl text-white">Simple &amp; <em>efficace</em></h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="text-center">
+                <p class="font-serif text-7xl font-light mb-4" style="color: rgba(197,160,89,0.25);">1</p>
+                <h3 class="font-serif text-xl text-white mb-3">Simulez votre devis</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">En 30 secondes, estimez le coût de votre projet grâce au simulateur en ligne.</p>
+            </div>
+            <div class="text-center">
+                <p class="font-serif text-7xl font-light mb-4" style="color: rgba(197,160,89,0.25);">2</p>
+                <h3 class="font-serif text-xl text-white mb-3">On échange</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Réponse garantie sous 24h. Nous définissons ensemble votre brief et votre vision.</p>
+            </div>
+            <div class="text-center">
+                <p class="font-serif text-7xl font-light mb-4" style="color: rgba(197,160,89,0.25);">3</p>
+                <h3 class="font-serif text-xl text-white mb-3">On crée</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Le jour J, je m'occupe de tout. Vous recevez vos fichiers haute résolution retouchés.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ═══════════════════════════════════════════════
+   CTA FINAL
+══════════════════════════════════════════════════ #}
+<section class="py-32 relative overflow-hidden" style="background-color: #050505;">
+    <div class="absolute inset-0 opacity-5"
+         style="background: radial-gradient(ellipse at 50% 100%, #C5A059 0%, transparent 60%);">
+    </div>
+    <div class="container mx-auto px-6 text-center max-w-3xl relative z-10">
+        <div class="w-12 h-px mx-auto mb-10" style="background-color: #C5A059;"></div>
+        <h2 class="font-serif font-light mb-8 text-white" style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.15;">
+            Prêt à donner vie<br>à votre <em style="color: #C5A059;">projet</em> ?
+        </h2>
+        <p class="text-gray-400 text-lg mb-12 leading-relaxed">
+            Discutons de votre vision et créons ensemble<br>des images qui vous ressemblent.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ path('devis') }}"
+               class="inline-block px-12 py-4 font-bold text-sm uppercase tracking-widest transition-all duration-300 hover:opacity-90"
+               style="background-color: #C5A059; color: #050505;">
+                Obtenir un devis gratuit
+            </a>
+            <a href="{{ path('contact') }}"
+               class="inline-block px-12 py-4 font-semibold text-sm uppercase tracking-widest border text-white transition-all duration-300 hover:bg-white/5"
+               style="border-color: rgba(255,255,255,0.15);">
+                Me contacter
+            </a>
+        </div>
+        <p class="text-xs text-gray-600 mt-8 tracking-widest">Réponse garantie sous 24h · Devis 100% gratuit</p>
+    </div>
+</section>
+
+<style>
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-33.333%); }
+}
+.animate-marquee {
+    animation: marquee 24s linear infinite;
+}
+</style>
+
 {% endblock %}

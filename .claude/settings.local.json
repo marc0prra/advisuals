@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ':*)",
+      "Bash(python3:*)",
+      "Bash(php:*)",
+      "Bash(unzip -l \"Cahier des charges - AD Visuals.docx\")",
+      "Bash(unzip -p \"Cahier des charges - AD Visuals.docx\" word/document.xml)",
+      "Bash(unzip -p \"Détails du projet - AD Visuals.docx\" word/document.xml)",
+      "Bash(grep -v '^$')",
+      "Bash(sed -E 's/<[^>]*>//g')",
+      "Bash(grep -v '^[[:space:]]*$')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8000/)"
+    ]
+  }
+}

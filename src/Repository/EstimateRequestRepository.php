@@ -16,28 +16,34 @@ class EstimateRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, EstimateRequest::class);
     }
 
-    //    /**
-    //     * @return EstimateRequests[] Returns an array of EstimateRequests objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /** @return EstimateRequest[] */
+    public function findPending(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.status = :status')
+            ->setParameter('status', 'en_attente')
+            ->orderBy('e.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?EstimateRequests
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /** @return EstimateRequest[] */
+    public function findRecent(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('e')
+            ->orderBy('e.created_at', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countPending(): int
+    {
+        return (int) $this->createQueryBuilder('e')
+            ->select('COUNT(e.id)')
+            ->andWhere('e.status = :status')
+            ->setParameter('status', 'en_attente')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
