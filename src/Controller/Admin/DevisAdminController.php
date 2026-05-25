@@ -79,7 +79,7 @@ class DevisAdminController extends AbstractController
             $mailer->send($mail);
         } catch (\Throwable) {}
 
-        $this->addFlash('success', 'Devis accepté. Revenus enregistrés (Adrien: ' . $adrien . '€ / Marco: ' . $marco . '€).');
+        $this->addFlash('success', 'Devis accepté. Revenus enregistrés (Adrien : ' . $adrien . ' €).');
         return $this->redirectToRoute('app_admin_devis');
     }
 
