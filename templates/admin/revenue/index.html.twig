@@ -1,70 +1,102 @@
 {% extends 'admin/base.html.twig' %}
-
-{% block title %}Chiffre d'affaires — Backoffice AD Visuals{% endblock %}
+{% block title %}Chiffre d'affaires — Backoffice{% endblock %}
 {% block page_title %}Chiffre d'affaires{% endblock %}
 
 {% block content %}
 
-{# Onglets de période #}
-<div class="flex gap-2 mb-8">
-    {% for p, label in {day: 'Aujourd\'hui', week: 'Cette semaine', month: 'Ce mois', year: 'Cette année'} %}
-        <a href="{{ path('app_admin_revenue', {period: p}) }}"
-           class="px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors
-           {% if period == p %}text-black{% else %}text-gray-400 border border-gray-700 hover:text-white{% endif %}"
-           {% if period == p %}style="background-color: #C5A059;"{% endif %}>
+{# Période tabs #}
+<div class="a-reveal" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+    {% set periods = {day: "Aujourd'hui", week: 'Cette semaine', month: 'Ce mois', year: 'Cette année'} %}
+    {% for p, label in periods %}
+        <a href="{{ path('app_admin_revenue', {period: p}) }}" data-turbo="false"
+           {% if period == p %}
+           class="btn-gold" style="font-size:11px;padding:7px 16px;text-transform:uppercase;letter-spacing:.07em;"
+           {% else %}
+           class="btn-ghost" style="font-size:11px;padding:7px 16px;text-transform:uppercase;letter-spacing:.07em;"
+           {% endif %}>
             {{ label }}
         </a>
     {% endfor %}
 </div>
 
-{# KPI #}
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
-        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">CA Total</p>
-        <p class="text-3xl font-bold text-white">{{ stats.total | number_format(0, ',', ' ') }} €</p>
+{# KPI grid #}
+<div class="a-reveal a-reveal-d1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+
+    <div class="admin-card" style="position:relative;overflow:hidden;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:hsl(0 0% 40%);margin-bottom:8px;">CA Total</p>
+        <p style="font-size:32px;font-weight:700;color:#fff;line-height:1;margin-bottom:6px;">{{ stats.total|number_format(0, ',', ' ') }} €</p>
+        <p style="font-size:11px;color:hsl(0 0% 35%);">sur la période</p>
+        <div style="position:absolute;bottom:-20px;right:-16px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.03);"></div>
     </div>
-    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
-        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Part Adrien (70%)</p>
-        <p class="text-3xl font-bold text-green-400">{{ stats.adrien | number_format(0, ',', ' ') }} €</p>
+
+    <div class="admin-card" style="position:relative;overflow:hidden;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:hsl(0 0% 40%);margin-bottom:8px;">Part Adrien (70%)</p>
+        <p style="font-size:32px;font-weight:700;color:hsl(142 55% 55%);line-height:1;margin-bottom:6px;">{{ stats.adrien|number_format(0, ',', ' ') }} €</p>
+        <p style="font-size:11px;color:hsl(0 0% 35%);">Adrien Mihajlovic</p>
+        <div style="position:absolute;bottom:-20px;right:-16px;width:80px;height:80px;border-radius:50%;background:rgba(74,222,128,.04);"></div>
     </div>
-    <div class="rounded-xl p-6 border border-gray-800" style="background-color: #0d0d0d;">
-        <p class="text-xs tracking-widest uppercase text-gray-500 mb-1">Part Marco (30%)</p>
-        <p class="text-3xl font-bold text-blue-400">{{ stats.marco | number_format(0, ',', ' ') }} €</p>
+
+    <div class="admin-card" style="position:relative;overflow:hidden;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:hsl(0 0% 40%);margin-bottom:8px;">Part Marco (30%)</p>
+        <p style="font-size:32px;font-weight:700;color:hsl(213 85% 65%);line-height:1;margin-bottom:6px;">{{ stats.marco|number_format(0, ',', ' ') }} €</p>
+        <p style="font-size:11px;color:hsl(0 0% 35%);">Marco Pereira</p>
+        <div style="position:absolute;bottom:-20px;right:-16px;width:80px;height:80px;border-radius:50%;background:rgba(96,165,250,.04);"></div>
     </div>
 </div>
 
-{# Tableau des entrées #}
-<div class="rounded-xl border border-gray-800 overflow-hidden" style="background-color: #0d0d0d;">
-    <div class="px-6 py-4 border-b border-gray-800">
-        <h2 class="text-sm font-semibold text-white">Détail des revenus</h2>
+{# Tableau des revenus #}
+<div class="admin-card a-reveal a-reveal-d2">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+            <h2 style="font-size:14px;font-weight:600;color:#fff;">Détail des revenus</h2>
+        </div>
+        <span style="font-size:12px;color:hsl(0 0% 40%);">{{ entries|length }} entrée(s)</span>
     </div>
 
     {% if entries is empty %}
-        <div class="px-6 py-10 text-center text-gray-500 text-sm italic">Aucun revenu enregistré sur cette période.</div>
+    <div style="text-align:center;padding:50px;font-size:13px;color:hsl(0 0% 35%);font-style:italic;">
+        Aucun revenu enregistré sur cette période.
+    </div>
     {% else %}
-        <table class="w-full text-sm">
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead>
-                <tr class="text-left text-xs uppercase tracking-widest text-gray-500 border-b border-gray-800">
-                    <th class="px-6 py-3">Date</th>
-                    <th class="px-6 py-3">Devis #</th>
-                    <th class="px-6 py-3">Total</th>
-                    <th class="px-6 py-3">Adrien (70%)</th>
-                    <th class="px-6 py-3">Marco (30%)</th>
+                <tr style="border-bottom:1px solid hsl(0 0% 10%);">
+                    {% for h in ['Date','Devis #','Total','Adrien (70%)','Marco (30%)'] %}
+                    <th style="padding:9px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:hsl(0 0% 38%);white-space:nowrap;">{{ h }}</th>
+                    {% endfor %}
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-800">
+            <tbody>
                 {% for entry in entries %}
-                    <tr class="hover:bg-white/5 transition-colors">
-                        <td class="px-6 py-4 text-gray-400">{{ entry.paymentDate | date('d/m/Y') }}</td>
-                        <td class="px-6 py-4 text-gray-400">#{{ entry.estimateId }}</td>
-                        <td class="px-6 py-4 font-bold text-white">{{ entry.amountTotal | number_format(0, ',', ' ') }} €</td>
-                        <td class="px-6 py-4 font-semibold text-green-400">{{ entry.shareAdrien | number_format(0, ',', ' ') }} €</td>
-                        <td class="px-6 py-4 font-semibold text-blue-400">{{ entry.shareMarco | number_format(0, ',', ' ') }} €</td>
-                    </tr>
+                <tr style="border-bottom:1px solid hsl(0 0% 7%);transition:background .1s;"
+                    onmouseover="this.style.background='hsl(0 0% 6%)'"
+                    onmouseout="this.style.background=''">
+                    <td style="padding:12px;color:hsl(0 0% 45%);white-space:nowrap;">{{ entry.paymentDate|date('d/m/Y') }}</td>
+                    <td style="padding:12px;color:hsl(0 0% 50%);">#{{ entry.estimateId }}</td>
+                    <td style="padding:12px;font-weight:700;color:#e5e5e5;">{{ entry.amountTotal|number_format(0, ',', ' ') }} €</td>
+                    <td style="padding:12px;font-weight:600;color:hsl(142 55% 55%);">{{ entry.shareAdrien|number_format(0, ',', ' ') }} €</td>
+                    <td style="padding:12px;font-weight:600;color:hsl(213 85% 65%);">{{ entry.shareMarco|number_format(0, ',', ' ') }} €</td>
+                </tr>
                 {% endfor %}
             </tbody>
+            <tfoot>
+                <tr style="border-top:1px solid hsl(0 0% 12%);">
+                    <td colspan="2" style="padding:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:hsl(0 0% 38%);">Total</td>
+                    <td style="padding:12px;font-weight:700;color:#C5A059;">{{ stats.total|number_format(0, ',', ' ') }} €</td>
+                    <td style="padding:12px;font-weight:600;color:hsl(142 55% 55%);">{{ stats.adrien|number_format(0, ',', ' ') }} €</td>
+                    <td style="padding:12px;font-weight:600;color:hsl(213 85% 65%);">{{ stats.marco|number_format(0, ',', ' ') }} €</td>
+                </tr>
+            </tfoot>
         </table>
+    </div>
     {% endif %}
 </div>
 
+<style>
+@media (max-width: 700px) {
+    [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
+}
+</style>
 {% endblock %}

@@ -1,108 +1,126 @@
-{# templates/about/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}À propos | Ad Visuals{% endblock %}
+{% block title %}À propos — Adrien Mihajlovic{% endblock %}
 
 {% block body %}
-    {# Hero Section #}
-    <section class="pt-32 pb-16 bg-gradient-to-b from-[#C5A059]/10 to-[#0a0a0a]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-4xl mx-auto text-center">
-                <h1 class="font-serif text-5xl sm:text-6xl font-light mb-6 text-balance">Mon Parcours</h1>
-                <p class="text-xl text-gray-400 leading-relaxed">
-                    Une passion devenue métier, guidée par l'authenticité et l'exigence 
+
+{# Hero #}
+<section class="pt-40 pb-20 border-b" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6">
+        <span class="section-label">À propos</span>
+        <h1 class="font-serif font-light text-white" style="font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.05;">
+            Mon<br><em style="color: #C5A059;">Parcours</em>
+        </h1>
+    </div>
+</section>
+
+{# Biographie — split #}
+<section class="py-24" style="background-color: #0a0a0a;">
+    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-5 gap-16 items-start">
+
+        {# Texte #}
+        <div class="lg:col-span-3">
+            <div class="space-y-6 text-sm leading-loose" style="color: #9ca3af;">
+                {% if settings.aboutBioIntro %}
+                <p class="text-base leading-loose" style="color: #c0bdb8;">{{ settings.aboutBioIntro }}</p>
+                {% endif %}
+                {% if settings.aboutBio1 %}
+                <p>{{ settings.aboutBio1 }}</p>
+                {% endif %}
+                {% if settings.aboutBio2 %}
+                <p>{{ settings.aboutBio2 }}</p>
+                {% endif %}
+
+                {# Citation #}
+                {% if settings.aboutQuote %}
+                <blockquote class="mt-10 pl-6 border-l-2 py-2" style="border-color: #C5A059;">
+                    <p class="font-serif text-lg italic text-white leading-snug">
+                        "{{ settings.aboutQuote }}"
+                    </p>
+                </blockquote>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Portrait #}
+        <div class="lg:col-span-2">
+            <div class="sticky top-28">
+                <div class="overflow-hidden border" style="aspect-ratio: 3/4; border-color: rgba(255,255,255,0.07);">
+                    {% set portrait = settings.aboutPortraitPath %}
+                    <img src="{{ portrait ? (portrait starts with 'http' ? portrait : asset(portrait)) : 'https://picsum.photos/seed/adrien-portrait/500/700' }}"
+                         alt="Adrien Mihajlovic, photographe professionnel"
+                         class="w-full h-full object-cover"
+                         style="filter: grayscale(20%);"
+                         loading="lazy"
+                         width="500"
+                         height="700">
+                </div>
+                <p class="text-xs uppercase tracking-widest mt-4 text-center" style="color: #6b7280;">
+                    Adrien Mihajlovic · Photographe
                 </p>
             </div>
         </div>
-    </section>
 
-    {# Main Story Section #}
-    <section class="py-16 bg-[#0a0a0a]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid lg:grid-cols-5 gap-12 items-start">
-                    <div class="lg:col-span-3 space-y-6 text-gray-400 leading-relaxed">
-                        <p class="text-lg first-letter:text-5xl first-letter:font-serif first-letter:font-semibold first-letter:text-[#C5A059] first-letter:mr-3 first-letter:float-left">
-                            Autodidacte passionné, j'ai forgé mon regard et ma technique en me formant par moi-même, porté par le désir constant de créer des images qui racontent quelque chose de vrai. Cette démarche m'a mené jusqu'à être accepté au sein de l'une des plus grandes écoles de photographie en France — une reconnaissance qui a renforcé mon exigence artistique.
-                        </p>
-                        <p>
-                            Depuis, j'ai pu collaborer sur différents projets publicitaires, notamment pour <span class="text-white font-medium">Adidas</span>, où j'ai développé un travail orienté portrait mêlant identité, mouvement et authenticité. Ma curiosité et ma polyvalence m'ont également ouvert les portes de la photo de presse.
-                        </p>
-                        <p>
-                            Aujourd'hui, mon travail s'articule autour de trois axes principaux : le <span class="text-white font-medium">portrait</span>, le <span class="text-white font-medium">reportage événementiel</span>, et la <span class="text-white font-medium">photographie commerciale</span>.
-                        </p>
-                    </div>
+    </div>
+</section>
 
-                    <div class="lg:col-span-2">
-                        <div class="sticky top-24 space-y-6">
-                            <div class="aspect-[3/4] overflow-hidden border border-white/10">
-                                {# Remplacez par votre image réelle #}
-                                <img src="{{ asset('images/adrien-portrait.jpg') }}" alt="Adrien Mihajlovic" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
-                            </div>
-                            <div class="bg-zinc-900/50 p-6 border border-white/5">
-                                <p class="font-serif text-xl font-semibold mb-3 text-[#C5A059]">Ma philosophie</p>
-                                <p class="text-sm text-gray-400 italic leading-relaxed">
-                                    « Polyvalent par passion, précis par exigence — vos images, sans compromis. » [cite: 5]
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{# Compétences #}
+<section class="py-24 border-t" style="background-color: #080808; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6">
+        <span class="section-label">Expertise</span>
+        <h2 class="font-serif font-light text-white mb-16" style="font-size: 2rem;">Compétences &amp; Expérience</h2>
+
+        <div class="grid sm:grid-cols-3 gap-px" style="background-color: rgba(255,255,255,0.06);">
+
+            {% for skill in skills %}
+            <div class="service-card reveal reveal-delay-{{ loop.index }}">
+                <div class="w-8 h-px mb-8" style="background-color: #C5A059;"></div>
+                <h3 class="font-serif text-lg text-white mb-4">{{ skill.title }}</h3>
+                <p class="text-sm leading-relaxed" style="color: #9ca3af;">{{ skill.description }}</p>
             </div>
+            {% else %}
+            <div class="col-span-3 py-10 text-center text-gray-600 italic text-sm">Aucune compétence renseignée.</div>
+            {% endfor %}
+
         </div>
-    </section>
+    </div>
+</section>
 
-    {# Skills & Experience Section #}
-    <section class="py-16 bg-[#0d0d0d]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="font-serif text-3xl sm:text-4xl font-light mb-12 text-center">Compétences & Expérience</h2>
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {# Carte 1 #}
-                    <div class="bg-[#0a0a0a] p-6 border border-white/5">
-                        <div class="w-12 h-12 bg-[#C5A059]/10 flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"></circle></svg>
-                        </div>
-                        <h3 class="font-serif text-xl font-semibold mb-3">Formation Autodidacte</h3>
-                        <p class="text-sm text-gray-500 leading-relaxed">Parcours atypique enrichi par une acceptation dans une grande école de photographie française.</p>
-                    </div>
+{# Approche #}
+<section class="py-24 border-t" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-4xl mx-auto px-6">
+        <span class="section-label">Méthode de travail</span>
+        <h2 class="font-serif font-light text-white mb-16" style="font-size: 2rem;">Mon Approche</h2>
 
-                    {# Carte 2 #}
-                    <div class="bg-[#0a0a0a] p-6 border border-white/5">
-                        <div class="w-12 h-12 bg-[#C5A059]/10 flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <h3 class="font-serif text-xl font-semibold mb-3">Projets Prestigieux</h3>
-                        <p class="text-sm text-gray-500 leading-relaxed">Collaborations avec des marques internationales comme Adidas, spécialisé dans le portrait authentique[cite: 5].</p>
-                    </div>
-
-                    {# Carte 3 #}
-                    <div class="bg-[#0a0a0a] p-6 border border-white/5">
-                        <div class="w-12 h-12 bg-[#C5A059]/10 flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        </div>
-                        <h3 class="font-serif text-xl font-semibold mb-3">Polyvalence</h3>
-                        <p class="text-sm text-gray-500 leading-relaxed">De la photo de presse aux portraits commerciaux, une adaptabilité à tous types de projets[cite: 5].</p>
-                    </div>
+        <ol class="space-y-10 list-none">
+            {% for step in steps %}
+            <li class="grid md:grid-cols-12 gap-6 reveal {{ not loop.last ? 'pb-10 border-b' : '' }}"
+                style="{{ not loop.last ? 'border-color: rgba(255,255,255,0.06);' : '' }}">
+                <div class="md:col-span-1 font-serif text-2xl font-light" style="color: rgba(255,255,255,0.15);" aria-hidden="true">0{{ loop.index }}</div>
+                <div class="md:col-span-11">
+                    <h3 class="font-serif text-xl text-white mb-3">{{ step.title }}</h3>
+                    <p class="text-sm leading-relaxed" style="color: #9ca3af;">{{ step.description }}</p>
                 </div>
-            </div>
+            </li>
+            {% else %}
+            <li class="text-center py-10 text-gray-600 italic text-sm">Aucune étape renseignée.</li>
+            {% endfor %}
+        </ol>
+    </div>
+</section>
+
+{# CTA #}
+<section class="py-20 border-t" style="background-color: #080808; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div>
+            <p class="font-serif text-2xl font-light text-white">Vous avez un projet en tête ?</p>
+            <p class="text-sm mt-2" style="color: #6b7280;">Devis gratuit · Réponse sous 24h</p>
         </div>
-    </section>
-
-    {# Approach Section #}
-    <section class="py-16 bg-[#0a0a0a]">
-        <div class="container mx-auto px-4 max-w-4xl">
-            <h2 class="font-serif text-3xl sm:text-4xl font-light mb-12 text-center">Mon Approche</h2>
-            <div class="space-y-8">
-                <div class="border-l-2 border-[#C5A059] pl-6">
-                    <h3 class="font-serif text-2xl font-semibold mb-3 text-white">Écoute & Compréhension</h3>
-                    <p class="text-gray-400 leading-relaxed">Je prends le temps d'analyser votre projet pour proposer une approche sur mesure, de la discussion initiale au brief final[cite: 8].</p>
-                </div>
-                <div class="border-l-2 border-[#C5A059] pl-6">
-                    <h3 class="font-serif text-2xl font-semibold mb-3 text-white">Préparation Méticuleuse</h3>
-                    <p class="text-gray-400 leading-relaxed">Repérage des lieux, choix du matériel et planification de la lumière : rien n'est laissé au hasard pour garantir la qualité[cite: 8].</p>
-                </div>
-            </div>
+        <div class="flex gap-3">
+            <a href="{{ path('devis') }}" class="btn-primary">Simuler un devis</a>
+            <a href="{{ path('contact') }}" class="btn-secondary">Me contacter</a>
         </div>
-    </section>
+    </div>
+</section>
+
 {% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}{{ isNew ? 'Nouveau service' : 'Modifier ' ~ service.label }} — Backoffice{% endblock %}
+{% block page_title %}{{ isNew ? 'Nouveau service' : 'Modifier le service' }}{% endblock %}
+
+{% block content %}
+
+<div class="admin-card a-reveal" style="max-width:640px;">
+    <form action="{{ isNew ? path('admin_services_new') : path('admin_services_edit', {id: service.id}) }}"
+          method="POST" style="display:flex;flex-direction:column;gap:18px;">
+
+        <div>
+            <label class="admin-label" for="svc-label">Nom du service <span>*</span></label>
+            <input class="admin-input" type="text" id="svc-label" name="label" required
+                   value="{{ service.label }}" placeholder="Ex: Shooting studio">
+        </div>
+
+        <div>
+            <label class="admin-label" for="svc-cat">Catégorie <span>*</span></label>
+            <input class="admin-input" type="text" id="svc-cat" name="category" required
+                   value="{{ service.category }}" placeholder="Ex: Studio, Événementiel…"
+                   list="cat-suggestions">
+            <datalist id="cat-suggestions">
+                <option value="Studio">
+                <option value="Événementiel">
+                <option value="Commercial">
+                <option value="Portrait">
+                <option value="Mariage">
+            </datalist>
+        </div>
+
+        <div>
+            <label class="admin-label" for="svc-price">Prix de base (€) <span>*</span></label>
+            <input class="admin-input" type="number" id="svc-price" name="base_price" required min="0" step="0.01"
+                   value="{{ service.basePrice ?? '' }}" placeholder="450">
+        </div>
+
+        <div>
+            <label class="admin-label" for="svc-desc">Description <span>*</span></label>
+            <textarea class="admin-textarea" id="svc-desc" name="description" required rows="5"
+                      placeholder="Décrivez ce service en détail…">{{ service.description }}</textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;padding-top:4px;">
+            <button type="submit" class="btn-gold">
+                {{ isNew ? 'Créer le service' : 'Enregistrer les modifications' }}
+            </button>
+            <a href="{{ path('admin_services_index') }}" class="btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

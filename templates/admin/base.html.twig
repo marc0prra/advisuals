@@ -4,90 +4,394 @@
     <meta charset="UTF-8">
     <title>{% block title %}Backoffice — AD Visuals{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {# Disable Turbo Drive for ALL admin navigation — full-page loads only #}
+    <meta name="turbo-visit-control" content="reload">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     {{ importmap('app') }}
-</head>
-<body class="font-['Poppins'] flex min-h-screen" style="background-color: #0a0a0a; color: white;">
 
-    {# Sidebar #}
-    <aside class="w-64 flex-shrink-0 flex flex-col min-h-screen border-r border-gray-800" style="background-color: #0d0d0d;">
-        <div class="px-6 py-8 border-b border-gray-800">
-            <span class="font-serif text-2xl font-bold" style="color: #C5A059;">AM</span>
-            <p class="text-gray-500 text-xs mt-1 tracking-widest uppercase">Backoffice</p>
+    <style>
+    /* ═══════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════ */
+    .admin-layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar fixed */
+    .admin-sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: fixed;
+        top: 0; left: 0;
+        height: 100vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        background: #0d0d0d;
+        border-right: 1px solid hsl(0 0% 9%);
+        z-index: 200;
+        scrollbar-width: thin;
+        scrollbar-color: #222 transparent;
+        transition: transform .3s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* Main content */
+    .admin-main {
+        margin-left: 220px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: #0a0a0a;
+        min-width: 0;
+    }
+
+    /* Topbar */
+    .admin-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px;
+        height: 56px;
+        border-bottom: 1px solid hsl(0 0% 9%);
+        background: #0d0d0d;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-shrink: 0;
+    }
+
+    /* Page content — full width, no max-width cap */
+    .admin-page {
+        padding: 28px;
+        flex: 1;
+        width: 100%;
+    }
+
+    /* Sidebar overlay backdrop (mobile) */
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.6);
+        z-index: 190;
+        backdrop-filter: blur(2px);
+    }
+    .sidebar-backdrop.is-open { display: block; }
+
+    /* Hamburger button (mobile only) */
+    .sidebar-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 36px; height: 36px;
+        background: transparent;
+        border: 1px solid hsl(0 0% 14%);
+        border-radius: 7px;
+        cursor: pointer;
+        color: hsl(0 0% 55%);
+        transition: color .15s, border-color .15s;
+        flex-shrink: 0;
+    }
+    .sidebar-toggle:hover { color: #fff; border-color: hsl(0 0% 25%); }
+
+    /* ═══════════════════════════════════════
+       NAV LINKS
+    ═══════════════════════════════════════ */
+    .admin-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 10px;
+        border-radius: 7px;
+        font-size: 13px;
+        color: hsl(0 0% 50%);
+        text-decoration: none;
+        transition: color .12s, background .12s;
+        white-space: nowrap;
+        line-height: 1.4;
+    }
+    .admin-nav-link:hover { color: #fff; background: rgba(255,255,255,.05); }
+    .admin-nav-link.is-active { color: #0a0a0a; background: #C5A059; }
+    .admin-nav-link.is-active svg { color: #0a0a0a; }
+    .admin-section-label {
+        padding: 10px 10px 3px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        color: hsl(0 0% 28%);
+        font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════
+       CARDS / FORMS
+    ═══════════════════════════════════════ */
+    .admin-card {
+        background: hsl(0 0% 5.5%);
+        border: 1px solid hsl(0 0% 10%);
+        border-radius: 12px;
+        padding: 22px 24px;
+        width: 100%;
+    }
+    .admin-input, .admin-textarea, .admin-select {
+        width: 100%;
+        padding: 9px 13px;
+        background: hsl(0 0% 7%);
+        border: 1px solid hsl(0 0% 15%);
+        border-radius: 7px;
+        color: #f0f0f0;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color .15s;
+    }
+    .admin-input:focus, .admin-textarea:focus, .admin-select:focus { border-color: #C5A059; }
+    .admin-textarea { resize: vertical; line-height: 1.6; }
+    .admin-label { display: block; font-size: 11.5px; color: hsl(0 0% 55%); margin-bottom: 5px; font-weight: 500; }
+    .admin-label span { color: #C5A059; }
+
+    /* ═══════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════ */
+    .btn-gold {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px; border-radius: 7px; font-size: 13px; font-weight: 500;
+        background: #C5A059; color: #0a0a0a; border: none; cursor: pointer;
+        transition: opacity .15s, transform .1s; text-decoration: none; white-space: nowrap;
+        font-family: inherit; line-height: 1.4;
+    }
+    .btn-gold:hover { opacity: .88; }
+    .btn-gold:active { transform: scale(.98); }
+    .btn-gold:disabled { opacity: .35 !important; cursor: not-allowed !important; }
+    .btn-ghost {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px; border-radius: 7px; font-size: 13px; font-weight: 500;
+        background: transparent; color: hsl(0 0% 50%); border: 1px solid hsl(0 0% 14%);
+        cursor: pointer; transition: color .15s, border-color .15s; text-decoration: none;
+        font-family: inherit; line-height: 1.4; white-space: nowrap;
+    }
+    .btn-ghost:hover { color: #fff; border-color: hsl(0 0% 28%); }
+    .btn-danger {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 7px 13px; border-radius: 7px; font-size: 12px; font-weight: 500;
+        background: transparent; color: #f87171; border: 1px solid rgba(248,113,113,.22);
+        cursor: pointer; transition: background .15s; font-family: inherit; line-height: 1.4;
+    }
+    .btn-danger:hover { background: rgba(248,113,113,.1); }
+
+    /* Drop zone */
+    .admin-dropzone {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 28px 16px; border: 1.5px dashed hsl(0 0% 18%); border-radius: 9px;
+        cursor: pointer; transition: border-color .18s, background .18s; position: relative;
+    }
+    .admin-dropzone:hover { border-color: #C5A059; background: rgba(197,160,89,.04); }
+
+    /* ═══════════════════════════════════════
+       ANIMATIONS (Framer-style)
+    ═══════════════════════════════════════ */
+    .a-reveal {
+        opacity: 0;
+        transform: translateY(14px);
+        filter: blur(3px);
+        transition: opacity .45s cubic-bezier(0.16,1,0.3,1),
+                    transform .45s cubic-bezier(0.16,1,0.3,1),
+                    filter .45s cubic-bezier(0.16,1,0.3,1);
+    }
+    .a-reveal.is-visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+    .a-reveal-d1 { transition-delay: .06s; }
+    .a-reveal-d2 { transition-delay: .12s; }
+    .a-reveal-d3 { transition-delay: .18s; }
+    .a-reveal-d4 { transition-delay: .24s; }
+
+    /* ═══════════════════════════════════════
+       DELETE MODAL
+    ═══════════════════════════════════════ */
+    .del-backdrop {
+        position: fixed; inset: 0; z-index: 9000;
+        background: rgba(0,0,0,.78);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity .18s;
+        backdrop-filter: blur(6px);
+    }
+    .del-backdrop.is-open { opacity: 1; pointer-events: auto; }
+    .del-modal {
+        background: hsl(0 0% 6%);
+        border: 1px solid hsl(0 0% 13%);
+        border-radius: 14px;
+        padding: 26px;
+        width: 100%; max-width: 380px;
+        margin: 16px;
+        transform: scale(.94) translateY(10px);
+        transition: transform .25s cubic-bezier(0.16,1,0.3,1);
+    }
+    .del-backdrop.is-open .del-modal { transform: scale(1) translateY(0); }
+
+    /* ═══════════════════════════════════════
+       TOASTS
+    ═══════════════════════════════════════ */
+    #toast-wrap {
+        position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+        display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .admin-toast {
+        padding: 11px 16px; border-radius: 9px; font-size: 13px; font-weight: 500;
+        border: 1px solid; pointer-events: auto;
+        animation: toastIn .3s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .admin-toast.success { background: hsl(142 35% 8%); border-color: hsl(142 35% 17%); color: hsl(142 55% 62%); }
+    .admin-toast.error   { background: hsl(0 35% 8%); border-color: hsl(0 35% 17%); color: hsl(0 55% 62%); }
+    @keyframes toastIn { from { opacity:0; transform: translateX(12px) scale(.96); } to { opacity:1; transform: none; } }
+
+    /* Flash messages */
+    .admin-flash { padding: 11px 15px; border-radius: 7px; font-size: 13px; margin-bottom: 18px; border: 1px solid; }
+    .admin-flash.success { background: hsl(142 35% 7%); border-color: hsl(142 35% 15%); color: hsl(142 55% 60%); }
+    .admin-flash.error   { background: hsl(0 35% 7%); border-color: hsl(0 35% 15%); color: hsl(0 55% 60%); }
+    .admin-flash.info    { background: hsl(0 0% 7%); border-color: hsl(0 0% 14%); color: hsl(0 0% 58%); }
+
+    /* Badges */
+    .badge-gold  { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; background: #C5A059; color: #0a0a0a; }
+    .badge-muted { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: hsl(0 0% 10%); color: hsl(0 0% 48%); }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 1024px) {
+        .admin-sidebar { transform: translateX(-100%); }
+        .admin-sidebar.is-open { transform: translateX(0); }
+        .admin-main { margin-left: 0; }
+        .sidebar-toggle { display: flex; }
+        .admin-page { padding: 20px 16px; }
+        .admin-topbar { padding: 0 16px; }
+    }
+
+    @media (max-width: 640px) {
+        .admin-page { padding: 16px 12px; }
+        .admin-card { padding: 16px; }
+        .topbar-title { display: none; }
+    }
+    </style>
+</head>
+<body class="font-['Poppins']" style="background:#0a0a0a; color:#f0f0f0;">
+
+<div class="admin-layout">
+
+    {# Mobile backdrop #}
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+    {# ════════ SIDEBAR ════════ #}
+    <aside class="admin-sidebar" id="admin-sidebar">
+
+        <div style="padding:20px 16px 16px; border-bottom:1px solid hsl(0 0% 9%); flex-shrink:0;">
+            <a href="{{ path('admin_homepage') }}" style="text-decoration:none; display:flex; align-items:baseline; gap:8px;">
+                <span class="font-serif" style="font-size:20px; font-weight:700; color:#C5A059;">AM</span>
+                <span style="font-size:10px; color:hsl(0 0% 30%); text-transform:uppercase; letter-spacing:.12em;">Admin</span>
+            </a>
         </div>
 
-        <nav class="flex-1 px-4 py-6 space-y-1">
-            <a href="{{ path('app_admin_dashboard') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
-               {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        {% set r = app.request.attributes.get('_route') %}
+        <nav style="flex:1; padding:10px 8px; overflow-y:auto;">
+
+            <p class="admin-section-label">Site</p>
+
+            <a href="{{ path('admin_homepage') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'admin_homepage' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Accueil
+            </a>
+            <a href="{{ path('admin_portfolio_index') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'admin_portfolio' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Portfolio
+            </a>
+            <a href="{{ path('admin_content_about') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'admin_content' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                À propos
+            </a>
+            <a href="{{ path('admin_services_index') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'admin_services' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                Services
+            </a>
+            <a href="{{ path('admin_practical_info') }}" data-turbo="false"
+               class="admin-nav-link {{ r == 'admin_practical_info' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Infos pratiques
+            </a>
+            <a href="{{ path('admin_testimonials') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'admin_testimonial' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                Témoignages
+            </a>
+
+            <p class="admin-section-label" style="margin-top:10px;">Business</p>
+
+            <a href="{{ path('app_admin_dashboard') }}" data-turbo="false"
+               class="admin-nav-link {{ r == 'app_admin_dashboard' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 Dashboard
             </a>
-
-            <a href="{{ path('app_admin_devis') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') starts with 'app_admin_devis' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
-               {% if app.request.attributes.get('_route') starts with 'app_admin_devis' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <a href="{{ path('app_admin_devis') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'app_admin_devis' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Devis
             </a>
-
-            <a href="{{ path('app_admin_revenue') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') == 'app_admin_revenue' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
-               {% if app.request.attributes.get('_route') == 'app_admin_revenue' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Chiffre d'affaires
+            <a href="{{ path('app_admin_revenue') }}" data-turbo="false"
+               class="admin-nav-link {{ r == 'app_admin_revenue' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Revenus
             </a>
-
-            <a href="{{ path('app_admin_messages') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') == 'app_admin_messages' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
-               {% if app.request.attributes.get('_route') == 'app_admin_messages' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            <a href="{{ path('app_admin_messages') }}" data-turbo="false"
+               class="admin-nav-link {{ r == 'app_admin_messages' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                 Messages
             </a>
-
-            <a href="{{ path('app_admin_admins') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors {% if app.request.attributes.get('_route') starts with 'app_admin_admins' %}text-white{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}"
-               {% if app.request.attributes.get('_route') starts with 'app_admin_admins' %}style="background-color: #C5A059; color: #0a0a0a;"{% endif %}>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <a href="{{ path('app_admin_admins') }}" data-turbo="false"
+               class="admin-nav-link {{ r starts with 'app_admin_admins' ? 'is-active' : '' }}">
+                <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 Admins
             </a>
         </nav>
 
-        <div class="px-4 py-6 border-t border-gray-800">
-            <div class="px-3 py-2 mb-3">
-                <p class="text-xs text-gray-500">Connecté en tant que</p>
-                <p class="text-sm text-white truncate">{{ app.user ? app.user.getUserIdentifier() : '' }}</p>
+        <div style="padding:8px 8px 14px; border-top:1px solid hsl(0 0% 9%); flex-shrink:0;">
+            <div style="padding:6px 10px 8px; font-size:11px; color:hsl(0 0% 32%); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                {{ app.user ? app.user.getUserIdentifier() : '' }}
             </div>
-            <a href="{{ path('app_logout') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                Se déconnecter
+            <a href="{{ path('app_logout') }}" data-turbo="false" class="admin-nav-link">
+                <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Déconnexion
             </a>
-            <a href="{{ path('home') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors mt-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            <a href="{{ path('home') }}" data-turbo="false" target="_blank" class="admin-nav-link">
+                <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 Voir le site
             </a>
         </div>
     </aside>
 
-    {# Contenu principal #}
-    <main class="flex-1 flex flex-col min-h-screen overflow-auto">
-        <header class="flex items-center justify-between px-8 py-5 border-b border-gray-800" style="background-color: #0d0d0d;">
-            <h1 class="text-lg font-semibold text-white">{% block page_title %}Dashboard{% endblock %}</h1>
-            <span class="text-xs text-gray-500">AD Visuals — Administration</span>
+    {# ════════ MAIN ════════ #}
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button class="sidebar-toggle" id="sidebar-toggle" onclick="openSidebar()" aria-label="Menu">
+                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="width:5px;height:5px;border-radius:50%;background:#C5A059;display:inline-block;flex-shrink:0;"></span>
+                    <h1 style="font-size:14px; font-weight:600; color:#fff; white-space:nowrap;">{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+            </div>
+            <span class="topbar-title" style="font-size:11px; color:hsl(0 0% 28%); letter-spacing:.05em;">AD Visuals — Administration</span>
         </header>
 
-        <div class="flex-1 p-8">
+        <div class="admin-page">
+
             {% for type, messages in app.flashes %}
                 {% for message in messages %}
-                    <div class="mb-6 px-4 py-3 rounded border text-sm
-                        {% if type == 'success' %}border-green-700 bg-green-900/30 text-green-300
-                        {% elseif type == 'error' %}border-red-700 bg-red-900/30 text-red-300
-                        {% else %}border-gray-700 bg-gray-900/30 text-gray-300{% endif %}">
+                    <div class="admin-flash {{ type == 'success' ? 'success' : (type == 'error' ? 'error' : 'info') }}">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -96,6 +400,71 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+</div>
 
+{# ════════ DELETE MODAL ════════ #}
+<div class="del-backdrop" id="del-backdrop" role="dialog" aria-modal="true">
+    <div class="del-modal">
+        <div style="width:38px;height:38px;border-radius:9px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.18);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+            <svg style="width:17px;height:17px;color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:7px;">Confirmer la suppression</h3>
+        <p id="del-desc" style="font-size:13px;color:hsl(0 0% 50%);margin-bottom:22px;line-height:1.6;">Cette action est irréversible.</p>
+        <div style="display:flex;gap:10px;">
+            <form id="del-form" method="POST" style="display:contents;">
+                <input type="hidden" name="_token" id="del-token">
+                <button type="submit" class="btn-danger" style="flex:1;justify-content:center;padding:9px;">Supprimer définitivement</button>
+            </form>
+            <button type="button" class="btn-ghost" style="flex:1;justify-content:center;" onclick="closeDeleteModal()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+{# ════════ TOASTS ════════ #}
+<div id="toast-wrap"></div>
+
+<script>
+/* ── Sidebar mobile ── */
+function openSidebar()  { document.getElementById('admin-sidebar').classList.add('is-open'); document.getElementById('sidebar-backdrop').classList.add('is-open'); }
+function closeSidebar() { document.getElementById('admin-sidebar').classList.remove('is-open'); document.getElementById('sidebar-backdrop').classList.remove('is-open'); }
+
+/* ── Scroll reveal — runs on every page load (Turbo disabled via data-turbo="false") ── */
+function initReveal() {
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.04, rootMargin: '-10px' });
+
+    document.querySelectorAll('.a-reveal').forEach(el => {
+        el.classList.remove('is-visible');
+        obs.observe(el);
+    });
+}
+/* Fire on load AND on any remaining Turbo navigations */
+document.addEventListener('DOMContentLoaded', initReveal);
+document.addEventListener('turbo:load', initReveal);
+document.addEventListener('turbo:render', initReveal);
+
+/* ── Delete modal ── */
+function openDeleteModal({ action, token, description }) {
+    const bd = document.getElementById('del-backdrop');
+    document.getElementById('del-form').action = action;
+    document.getElementById('del-token').value  = token || '';
+    if (description) document.getElementById('del-desc').textContent = description;
+    bd.classList.add('is-open');
+    setTimeout(() => bd.querySelector('.btn-danger').focus(), 50);
+}
+function closeDeleteModal() { document.getElementById('del-backdrop').classList.remove('is-open'); }
+document.getElementById('del-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget) closeDeleteModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+
+/* ── Toast ── */
+function showToast(msg, type = 'success') {
+    const t = document.createElement('div');
+    t.className = `admin-toast ${type}`;
+    t.textContent = msg;
+    document.getElementById('toast-wrap').appendChild(t);
+    setTimeout(() => t.remove(), 4000);
+}
+</script>
 </body>
 </html>

@@ -1,65 +1,70 @@
 {% extends 'admin/base.html.twig' %}
-
-{% block title %}Admins — Backoffice AD Visuals{% endblock %}
-{% block page_title %}Gestion des administrateurs{% endblock %}
+{% block title %}Admins — Backoffice{% endblock %}
+{% block page_title %}Administrateurs{% endblock %}
 
 {% block content %}
 
-<div class="flex justify-end mb-6">
-    <a href="{{ path('app_admin_admins_new') }}"
-       class="px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors"
-       style="background-color: #C5A059; color: #0a0a0a;">
-        + Ajouter un admin
-    </a>
-</div>
+<div class="admin-card a-reveal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+            <h2 style="font-size:14px;font-weight:600;color:#fff;">Comptes administrateurs</h2>
+        </div>
+        <a href="{{ path('app_admin_admins_new') }}" data-turbo="false" class="btn-gold" style="font-size:11px;padding:7px 14px;">
+            + Ajouter
+        </a>
+    </div>
 
-<div class="rounded-xl border border-gray-800 overflow-hidden" style="background-color: #0d0d0d;">
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="text-left text-xs uppercase tracking-widest text-gray-500 border-b border-gray-800">
-                <th class="px-6 py-3">#</th>
-                <th class="px-6 py-3">Email</th>
-                <th class="px-6 py-3">Rôle</th>
-                <th class="px-6 py-3">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800">
-            {% for admin in admins %}
-                <tr class="hover:bg-white/5 transition-colors">
-                    <td class="px-6 py-4 text-gray-500">{{ admin.id }}</td>
-                    <td class="px-6 py-4">
-                        <span class="text-white font-medium">{{ admin.email }}</span>
-                        {% if admin.getUserIdentifier() == app.user.getUserIdentifier() %}
-                            <span class="ml-2 px-2 py-0.5 rounded-full text-xs bg-gray-700 text-gray-400">Vous</span>
-                        {% endif %}
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+                <tr style="border-bottom:1px solid hsl(0 0% 10%);">
+                    {% for h in ['#','Email','Rôle','Actions'] %}
+                    <th style="padding:9px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:hsl(0 0% 38%);white-space:nowrap;">{{ h }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for admin in admins %}
+                <tr style="border-bottom:1px solid hsl(0 0% 7%);transition:background .1s;"
+                    onmouseover="this.style.background='hsl(0 0% 6%)'"
+                    onmouseout="this.style.background=''">
+                    <td style="padding:12px;color:hsl(0 0% 35%);">{{ admin.id }}</td>
+                    <td style="padding:12px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="color:#e5e5e5;font-weight:500;">{{ admin.email }}</span>
+                            {% if admin.getUserIdentifier() == app.user.getUserIdentifier() %}
+                            <span style="padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;background:hsl(0 0% 10%);color:hsl(0 0% 45%);border:1px solid hsl(0 0% 14%);">Vous</span>
+                            {% endif %}
+                        </div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td style="padding:12px;">
                         {% for role in admin.roles %}
-                            <span class="px-2 py-0.5 rounded text-xs bg-gray-800 text-gray-300 border border-gray-700">{{ role }}</span>
+                        <span style="padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;background:hsl(48 40% 8%);color:hsl(48 70% 55%);border:1px solid hsl(48 40% 14%);margin-right:4px;">{{ role }}</span>
                         {% endfor %}
                     </td>
-                    <td class="px-6 py-4">
-                        <div class="flex gap-2">
-                            <a href="{{ path('app_admin_admins_edit', {id: admin.id}) }}"
-                               class="px-3 py-1.5 text-xs rounded border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400 transition-colors">
+                    <td style="padding:12px;">
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <a href="{{ path('app_admin_admins_edit', {id: admin.id}) }}" data-turbo="false" class="btn-ghost" style="font-size:11px;padding:5px 11px;">
                                 Modifier
                             </a>
                             {% if admin.getUserIdentifier() != app.user.getUserIdentifier() %}
-                                <form method="post" action="{{ path('app_admin_admins_delete', {id: admin.id}) }}"
-                                      onsubmit="return confirm('Supprimer cet administrateur ?')">
-                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_delete') }}">
-                                    <button type="submit"
-                                            class="px-3 py-1.5 text-xs rounded border border-red-800 text-red-400 hover:bg-red-900/30 transition-colors">
-                                        Supprimer
-                                    </button>
-                                </form>
+                            <button type="button" class="btn-danger" style="font-size:11px;padding:5px 11px;"
+                                    onclick="openDeleteModal({
+                                        action: '{{ path('app_admin_admins_delete', {id: admin.id}) }}',
+                                        token: '{{ csrf_token('admin_delete') }}',
+                                        description: 'Supprimer l\\'administrateur <strong>{{ admin.email }}</strong> ? Cette action est irréversible.'
+                                    })">
+                                Supprimer
+                            </button>
                             {% endif %}
                         </div>
                     </td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

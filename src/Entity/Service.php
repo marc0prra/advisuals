@@ -26,6 +26,9 @@ class Service
     #[ORM\Column(length: 255)]
     private ?string $category = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isFeatured = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +78,18 @@ class Service
     public function setCategory(string $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function isIsFeatured(): bool
+    {
+        return $this->isFeatured;
+    }
+
+    public function setIsFeatured(bool $isFeatured): static
+    {
+        $this->isFeatured = $isFeatured;
 
         return $this;
     }

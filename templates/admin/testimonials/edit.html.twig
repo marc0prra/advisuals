@@ -1,0 +1,88 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}{{ isNew ? 'Nouveau témoignage' : 'Modifier le témoignage' }} — Backoffice{% endblock %}
+{% block page_title %}{{ isNew ? 'Nouveau témoignage' : 'Modifier le témoignage' }}{% endblock %}
+
+{% block content %}
+<div class="a-reveal">
+
+    <a href="{{ path('admin_testimonials') }}" class="btn-ghost" style="margin-bottom:28px;display:inline-flex;">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Retour aux témoignages
+    </a>
+
+    <form action="" method="POST">
+        <div class="admin-card" style="display:flex;flex-direction:column;gap:18px;">
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                    <label class="admin-label" for="author">Auteur <span>*</span></label>
+                    <input class="admin-input" type="text" id="author" name="author" required
+                           value="{{ testimonial.author ?? '' }}" placeholder="Thomas R.">
+                </div>
+                <div>
+                    <label class="admin-label" for="role">Rôle / Fonction <span>*</span></label>
+                    <input class="admin-input" type="text" id="role" name="role" required
+                           value="{{ testimonial.role ?? '' }}" placeholder="Directeur Artistique">
+                </div>
+            </div>
+
+            <div>
+                <label class="admin-label" for="quote">Citation <span>*</span></label>
+                <textarea class="admin-textarea" id="quote" name="quote" rows="4" required
+                          placeholder="Le témoignage du client…">{{ testimonial.quote ?? '' }}</textarea>
+            </div>
+
+            <div>
+                <label class="admin-label">Note</label>
+                <div style="display:flex;gap:6px;align-items:center;" id="stars-wrap">
+                    {% for s in 1..5 %}
+                    <button type="button" class="star-btn"
+                            data-value="{{ s }}"
+                            onclick="setStar({{ s }})"
+                            style="font-size:24px;background:none;border:none;cursor:pointer;padding:2px;transition:transform .1s;line-height:1;color:{{ s <= (testimonial.rating ?? 5) ? '#C5A059' : 'hsl(0 0% 22%)' }};">★</button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="rating" name="rating" value="{{ testimonial.rating ?? 5 }}">
+            </div>
+
+            <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;cursor:pointer;">
+                <input type="checkbox" id="isFeatured" name="isFeatured" value="1"
+                       {{ testimonial.isFeatured ? 'checked' : '' }}
+                       style="width:16px;height:16px;accent-color:#C5A059;flex-shrink:0;">
+                <div>
+                    <p style="font-size:13px;font-weight:500;color:#e5e5e5;">Mettre en avant sur l'accueil</p>
+                    <p style="font-size:11px;color:hsl(0 0% 42%);margin-top:2px;">Affiché dans la section témoignages.</p>
+                </div>
+            </label>
+
+            <div style="display:flex;gap:10px;padding-top:4px;">
+                <button type="submit" class="btn-gold">{{ isNew ? 'Créer' : 'Enregistrer' }}</button>
+                <a href="{{ path('admin_testimonials') }}" class="btn-ghost">Annuler</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function setStar(val) {
+    document.getElementById('rating').value = val;
+    document.querySelectorAll('.star-btn').forEach(b => {
+        b.style.color = +b.dataset.value <= val ? '#C5A059' : 'hsl(0 0% 22%)';
+    });
+}
+document.querySelectorAll('.star-btn').forEach(b => {
+    b.addEventListener('mouseenter', () => {
+        const v = +b.dataset.value;
+        document.querySelectorAll('.star-btn').forEach(b2 => {
+            b2.style.color = +b2.dataset.value <= v ? '#e0c47a' : 'hsl(0 0% 22%)';
+        });
+    });
+    b.addEventListener('mouseleave', () => {
+        const cur = +document.getElementById('rating').value;
+        document.querySelectorAll('.star-btn').forEach(b2 => {
+            b2.style.color = +b2.dataset.value <= cur ? '#C5A059' : 'hsl(0 0% 22%)';
+        });
+    });
+});
+</script>
+{% endblock %}

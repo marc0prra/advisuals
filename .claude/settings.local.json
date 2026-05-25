@@ -10,7 +10,14 @@
       "Bash(grep -v '^$')",
       "Bash(sed -E 's/<[^>]*>//g')",
       "Bash(grep -v '^[[:space:]]*$')",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8000/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8000/)",
+      "Bash(Get-ChildItem -Path . -Force)",
+      "Bash(Select-Object Name)",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\xampp\\\\htdocs\\\\symfony\\\\advisuals\\\\public\\\\uploads\\\\projects\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType File -Force \"C:\\\\xampp\\\\htdocs\\\\symfony\\\\advisuals\\\\public\\\\uploads\\\\.gitkeep\")",
+      "Bash(New-Item -ItemType File -Force \"C:\\\\xampp\\\\htdocs\\\\symfony\\\\advisuals\\\\public\\\\uploads\\\\projects\\\\.gitkeep\")",
+      "PowerShell(New-Item *)"
     ]
   }
 }

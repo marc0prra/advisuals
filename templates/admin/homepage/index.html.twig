@@ -1,0 +1,386 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Accueil — Backoffice{% endblock %}
+{% block page_title %}Page d'accueil{% endblock %}
+
+{% block content %}
+
+{# ════════ GRILLE PHOTOS ════════ #}
+<section class="admin-card a-reveal" style="margin-bottom:24px;" id="featured-grid">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:3px;height:20px;background:#C5A059;border-radius:2px;"></div>
+            <h2 style="font-size:14px;font-weight:600;color:#fff;">Photos à la une</h2>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:12px;color:hsl(0 0% 40%);" id="grid-count">{{ featured|length }} sélectionnée(s)</span>
+            <button id="save-grid-btn" class="btn-gold" disabled style="opacity:.4;cursor:not-allowed;">
+                Sauvegarder la grille
+            </button>
+        </div>
+    </div>
+    <p style="font-size:12px;color:hsl(0 0% 40%);margin-bottom:20px;margin-left:13px;">
+        Glissez une photo depuis le bas vers la grille. Cliquez <strong style="color:hsl(0 0% 65%);">↔</strong> pour agrandir. <strong style="color:hsl(0 0% 65%);">✕</strong> pour retirer.
+    </p>
+
+    {# Drop grid #}
+    <div id="feat-grid"
+         style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;min-height:160px;margin-bottom:16px;padding:8px;border-radius:10px;border:1.5px dashed hsl(0 0% 14%);transition:border-color .2s;"
+         ondragover="gridOver(event)"
+         ondrop="gridDrop(event)"
+         ondragleave="gridLeave()">
+
+        {% for p in featured %}
+        <div class="grid-card" data-id="{{ p.id }}" data-size="{{ p.featuredSize ?? 'normal' }}"
+             draggable="true"
+             style="position:relative;border-radius:8px;overflow:hidden;border:1px solid hsl(0 0% 12%);background:hsl(0 0% 7%);cursor:grab;
+                    grid-column:span {{ (p.featuredSize ?? 'normal') == 'wide' ? 2 : 1 }};
+                    aspect-ratio:{{ (p.featuredSize ?? 'normal') == 'wide' ? '16/9' : '4/5' }};"
+             ondragstart="cardDragStart(event,this)"
+             ondragend="cardDragEnd(this)">
+            {% if p.imagePath %}
+            <img src="{{ asset(p.imagePath) }}" alt="{{ p.title }}"
+                 style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
+            {% endif %}
+            <div class="card-overlay" style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 50%);opacity:0;transition:opacity .2s;display:flex;flex-direction:column;justify-content:space-between;padding:6px;">
+                <div style="display:flex;justify-content:flex-end;">
+                    <button onclick="removeCard(this)"
+                            style="width:22px;height:22px;border-radius:5px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;">✕</button>
+                </div>
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+                    <p style="font-size:10px;color:#fff;font-weight:500;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.title }}</p>
+                    <button onclick="toggleSize(this)"
+                            style="width:22px;height:22px;border-radius:5px;background:rgba(197,160,89,.8);border:none;color:#0a0a0a;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;">↔</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if featured|length == 0 %}
+        <div id="grid-hint" style="grid-column:span 6;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:hsl(0 0% 30%);">
+            <svg style="width:32px;height:32px;margin-bottom:10px;opacity:.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            <p style="font-size:13px;">Glissez des photos depuis le bas</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {# Pool #}
+    <div style="padding:12px;background:hsl(0 0% 7%);border-radius:8px;border:1px solid hsl(0 0% 11%);">
+        <p style="font-size:11px;color:hsl(0 0% 35%);margin-bottom:10px;">Tous les projets — glissez vers la grille</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            {% for p in allProjects %}
+            <div class="pool-item" data-id="{{ p.id }}" data-title="{{ p.title }}"
+                 data-img="{{ p.imagePath ? asset(p.imagePath) : '' }}"
+                 draggable="true"
+                 style="position:relative;width:64px;height:64px;border-radius:6px;overflow:hidden;border:1px solid hsl(0 0% 13%);cursor:grab;flex-shrink:0;"
+                 title="{{ p.title }}"
+                 ondragstart="poolDragStart(event,this)">
+                {% if p.imagePath %}
+                <img src="{{ asset(p.imagePath) }}" alt="{{ p.title }}"
+                     style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
+                {% else %}
+                <div style="width:100%;height:100%;background:hsl(0 0% 10%);display:flex;align-items:center;justify-content:center;color:hsl(0 0% 30%);pointer-events:none;">
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                {% endif %}
+                {% if p.isFeatured %}
+                <div style="position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#C5A059;"></div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# ════════ BLOC À PROPOS ════════ #}
+<section class="admin-card a-reveal a-reveal-d1" style="margin-bottom:24px;" id="about-block">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <div style="width:3px;height:20px;background:#C5A059;border-radius:2px;"></div>
+        <h2 style="font-size:14px;font-weight:600;color:#fff;">Bloc « À propos » de l'accueil</h2>
+    </div>
+
+    <form action="{{ path('admin_homepage_about') }}" method="POST" enctype="multipart/form-data"
+          style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div>
+                    <label class="admin-label" for="ha-title">Titre</label>
+                    <input class="admin-input" type="text" id="ha-title" name="title"
+                           value="{{ settings.homeAboutTitle }}" placeholder="Une histoire de lumière…">
+                </div>
+                <div>
+                    <label class="admin-label" for="ha-text1">Paragraphe 1</label>
+                    <textarea class="admin-textarea" id="ha-text1" name="text1" rows="4"
+                              placeholder="Premier paragraphe…">{{ settings.homeAboutText1 }}</textarea>
+                </div>
+                <div>
+                    <label class="admin-label" for="ha-text2">Paragraphe 2</label>
+                    <textarea class="admin-textarea" id="ha-text2" name="text2" rows="4"
+                              placeholder="Second paragraphe…">{{ settings.homeAboutText2 }}</textarea>
+                </div>
+                <div>
+                    <label class="admin-label" for="ha-quote">Citation</label>
+                    <input class="admin-input" type="text" id="ha-quote" name="quote"
+                           value="{{ settings.homeAboutQuote }}" placeholder="« La lumière est mon pinceau. »">
+                </div>
+            </div>
+            <div>
+                <label class="admin-label">Image</label>
+                {% if settings.homeAboutImagePath %}
+                <img src="{{ asset(settings.homeAboutImagePath) }}" alt="Image about"
+                     style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid hsl(0 0% 12%);margin-bottom:10px;">
+                {% endif %}
+                <label class="admin-dropzone">
+                    <svg style="width:20px;height:20px;color:hsl(0 0% 30%);margin-bottom:6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    <p style="font-size:12px;color:hsl(0 0% 45%);">Choisir ou déposer</p>
+                    <input type="file" name="imageFile" accept="image/*"
+                           style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+                </label>
+                <input class="admin-input" type="url" name="imageUrl" style="margin-top:8px;"
+                       placeholder="ou URL directe…">
+            </div>
+        </div>
+        <div>
+            <button type="submit" class="btn-gold">Enregistrer le bloc À propos</button>
+        </div>
+    </form>
+</section>
+
+{# ════════ TÉMOIGNAGES ════════ #}
+<section class="admin-card a-reveal a-reveal-d2" style="margin-bottom:24px;" id="testimonials-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+                <h2 style="font-size:14px;font-weight:600;color:#fff;">Témoignages mis en avant</h2>
+            </div>
+            <p style="font-size:12px;color:hsl(0 0% 42%);margin-left:13px;">Max 3. Glissez depuis la liste vers les slots.</p>
+        </div>
+        <button id="save-testi-btn" class="btn-gold" disabled style="opacity:.4;cursor:not-allowed;">Sauvegarder</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;" id="testi-slots">
+        {% for i in 1..3 %}
+            {% set ft = testimonials|filter(t => t.isFeatured and t.featuredPosition == i)|first %}
+            <div class="testi-slot" data-slot="{{ i }}"
+                 style="min-height:90px;padding:12px;border-radius:10px;border:1.5px dashed hsl(0 0% 16%);position:relative;transition:border-color .15s,background .15s;"
+                 ondragover="slotOver(event,this)" ondragleave="slotLeave(this)" ondrop="testiDrop(event,this)">
+                {% if ft is defined and ft %}
+                <div class="testi-card" data-id="{{ ft.id }}">
+                    <p style="font-size:12px;font-weight:600;color:#e5e5e5;margin-bottom:2px;">{{ ft.author }}</p>
+                    <p style="font-size:11px;color:hsl(0 0% 42%);">{{ ft.role }}</p>
+                    <p style="font-size:11px;color:hsl(0 0% 50%);margin-top:5px;line-height:1.5;">{{ ft.quote|slice(0,60) }}…</p>
+                    <button onclick="removeTestitSlot(this)"
+                            style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:4px;background:hsl(0 0% 10%);border:1px solid hsl(0 0% 16%);color:hsl(0 0% 45%);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;">✕</button>
+                </div>
+                {% else %}
+                <p style="font-size:12px;color:hsl(0 0% 28%);text-align:center;padding-top:28px;">Slot {{ i }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px;">
+        {% for t in testimonials %}
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:7px;cursor:grab;"
+             draggable="true"
+             data-id="{{ t.id }}" data-author="{{ t.author }}" data-role="{{ t.role }}"
+             data-quote="{{ t.quote|slice(0,60) }}"
+             ondragstart="testiPoolDrag(event,this)">
+            <span style="color:#C5A059;font-size:11px;flex-shrink:0;">{% for s in 1..t.rating %}★{% endfor %}</span>
+            <div style="flex:1;min-width:0;">
+                <span style="font-size:12px;font-weight:500;color:#e5e5e5;">{{ t.author }}</span>
+                <span style="font-size:11px;color:hsl(0 0% 42%);margin-left:6px;">— {{ t.role }}</span>
+            </div>
+            {% if t.isFeatured %}<span class="badge-gold">En avant</span>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{# ════════ SERVICES ════════ #}
+<section class="admin-card a-reveal a-reveal-d3" id="services-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+                <h2 style="font-size:14px;font-weight:600;color:#fff;">Services mis en avant</h2>
+            </div>
+            <p style="font-size:12px;color:hsl(0 0% 42%);margin-left:13px;">Cochez jusqu'à 3 services à afficher sur l'accueil.</p>
+        </div>
+        <button id="save-services-btn" class="btn-gold" disabled style="opacity:.4;cursor:not-allowed;">Sauvegarder</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px;">
+        {% for service in allServices %}
+        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:7px;cursor:pointer;transition:border-color .15s;"
+               onmouseover="this.style.borderColor='hsl(0 0% 20%)'"
+               onmouseout="this.style.borderColor='hsl(0 0% 12%)'">
+            <input type="checkbox" class="service-check" data-id="{{ service.id }}"
+                   style="width:15px;height:15px;accent-color:#C5A059;flex-shrink:0;"
+                   {{ service.isIsFeatured ? 'checked' : '' }}
+                   onchange="onServiceChange()">
+            <span style="font-size:13px;color:#e5e5e5;">{{ service.label }}</span>
+            <span style="font-size:11px;color:hsl(0 0% 40%);margin-left:auto;">{{ service.basePrice|number_format(0,'','\u00a0') }} €</span>
+        </label>
+        {% else %}
+        <p style="font-size:13px;color:hsl(0 0% 35%);padding:20px;text-align:center;">Aucun service créé.</p>
+        {% endfor %}
+    </div>
+</section>
+
+{# ════════ SCRIPTS ════════ #}
+<script>
+const GRID_URL     = '{{ path('admin_portfolio_save_featured_grid') }}';
+const TESTI_URL    = '{{ path('admin_testimonials_save_featured') }}';
+const SERVICE_URL  = '{{ path('admin_homepage_services_featured') }}';
+
+/* ── Grid hover effect ── */
+document.querySelectorAll('.grid-card').forEach(c => {
+    c.addEventListener('mouseenter', () => c.querySelector('.card-overlay').style.opacity = '1');
+    c.addEventListener('mouseleave', () => c.querySelector('.card-overlay').style.opacity = '0');
+});
+
+/* ── Grid drag ── */
+let dragging = null;
+function poolDragStart(e, el) { dragging = {type:'pool', el}; e.dataTransfer.effectAllowed='copy'; }
+function cardDragStart(e, el) {
+    dragging = {type:'card', el};
+    setTimeout(() => el.style.opacity = '.3', 0);
+    e.dataTransfer.effectAllowed = 'move';
+}
+function cardDragEnd(el) { el.style.opacity=''; dragging=null; }
+
+function gridOver(e) {
+    if (!dragging) return; e.preventDefault();
+    const grid = document.getElementById('feat-grid');
+    grid.style.borderColor = '#C5A059';
+    const over = e.target.closest('.grid-card');
+    if (over && dragging.type === 'card' && dragging.el !== over) {
+        const mid = over.getBoundingClientRect().left + over.getBoundingClientRect().width/2;
+        e.clientX < mid ? over.before(dragging.el) : over.after(dragging.el);
+    }
+}
+function gridLeave() { document.getElementById('feat-grid').style.borderColor=''; }
+
+function gridDrop(e) {
+    e.preventDefault();
+    document.getElementById('feat-grid').style.borderColor='';
+    if (!dragging || dragging.type !== 'pool') return;
+    const pool = dragging.el;
+    const id = pool.dataset.id, title = pool.dataset.title, img = pool.dataset.img;
+    const grid = document.getElementById('feat-grid');
+    if (grid.querySelector(`.grid-card[data-id="${id}"]`)) { dragging=null; return; }
+    const hint = document.getElementById('grid-hint');
+    if (hint) hint.remove();
+
+    const card = document.createElement('div');
+    card.className = 'grid-card';
+    card.dataset.id = id; card.dataset.size = 'normal';
+    card.setAttribute('draggable','true');
+    card.style.cssText = 'position:relative;border-radius:8px;overflow:hidden;border:1px solid hsl(0 0% 12%);background:hsl(0 0% 7%);cursor:grab;grid-column:span 1;aspect-ratio:4/5;';
+    card.innerHTML = `
+        ${img ? `<img src="${img}" alt="${title}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">` : ''}
+        <div class="card-overlay" style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent 50%);opacity:0;transition:opacity .2s;display:flex;flex-direction:column;justify-content:space-between;padding:6px;">
+            <div style="display:flex;justify-content:flex-end;">
+                <button onclick="removeCard(this)" style="width:22px;height:22px;border-radius:5px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;">✕</button>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+                <p style="font-size:10px;color:#fff;font-weight:500;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</p>
+                <button onclick="toggleSize(this)" style="width:22px;height:22px;border-radius:5px;background:rgba(197,160,89,.8);border:none;color:#0a0a0a;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;">↔</button>
+            </div>
+        </div>`;
+    card.addEventListener('dragstart', ev => cardDragStart(ev, card));
+    card.addEventListener('dragend',   () => cardDragEnd(card));
+    card.addEventListener('mouseenter', () => card.querySelector('.card-overlay').style.opacity='1');
+    card.addEventListener('mouseleave', () => card.querySelector('.card-overlay').style.opacity='0');
+    grid.appendChild(card);
+    markGridDirty();
+    updateCount();
+    dragging = null;
+}
+
+function removeCard(btn) {
+    btn.closest('.grid-card').remove();
+    markGridDirty(); updateCount();
+    if (!document.querySelector('#feat-grid .grid-card')) {
+        const h = document.createElement('div');
+        h.id = 'grid-hint';
+        h.style.cssText = 'grid-column:span 6;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:hsl(0 0% 30%);';
+        h.innerHTML = '<p style="font-size:13px;">Glissez des photos depuis le bas</p>';
+        document.getElementById('feat-grid').appendChild(h);
+    }
+}
+function toggleSize(btn) {
+    const c = btn.closest('.grid-card');
+    const next = c.dataset.size === 'wide' ? 'normal' : 'wide';
+    c.dataset.size = next;
+    c.style.gridColumn = next === 'wide' ? 'span 2' : 'span 1';
+    c.style.aspectRatio = next === 'wide' ? '16/9' : '4/5';
+    markGridDirty();
+}
+function markGridDirty() {
+    const btn = document.getElementById('save-grid-btn');
+    btn.disabled = false; btn.style.opacity=''; btn.style.cursor='';
+}
+function updateCount() {
+    const n = document.querySelectorAll('#feat-grid .grid-card').length;
+    document.getElementById('grid-count').textContent = `${n} sélectionnée(s)`;
+}
+document.getElementById('save-grid-btn').addEventListener('click', async () => {
+    const data = [...document.querySelectorAll('#feat-grid .grid-card')].map((c,i) => ({id:+c.dataset.id,position:i+1,size:c.dataset.size}));
+    const btn = document.getElementById('save-grid-btn');
+    btn.textContent='…'; btn.disabled=true;
+    const r = await fetch(GRID_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if (r.ok) { showToast('Grille sauvegardée.','success'); btn.textContent='✓ Sauvegardé'; setTimeout(()=>{btn.textContent='Sauvegarder la grille';btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';},2500); }
+    else { btn.textContent='Erreur'; btn.disabled=false; }
+});
+
+/* ── Témoignages ── */
+let testiDrag = null;
+function testiPoolDrag(e, el) { testiDrag={id:el.dataset.id,author:el.dataset.author,role:el.dataset.role,quote:el.dataset.quote}; e.dataTransfer.effectAllowed='copy'; }
+function slotOver(e, s) { e.preventDefault(); s.style.borderColor='#C5A059'; s.style.background='rgba(197,160,89,.04)'; }
+function slotLeave(s) { s.style.borderColor=''; s.style.background=''; }
+
+function testiDrop(e, slot) {
+    e.preventDefault(); slotLeave(slot);
+    if (!testiDrag) return;
+    const all = document.querySelectorAll('.testi-slot');
+    const already = [...all].some(s=>s.querySelector('.testi-card')?.dataset.id===testiDrag.id);
+    const filled = [...all].filter(s=>s.querySelector('.testi-card')).length;
+    if (!already && filled>=3) { alert('Maximum 3 témoignages.'); testiDrag=null; return; }
+    all.forEach(s=>{ if (s.querySelector('.testi-card')?.dataset.id===testiDrag.id) s.innerHTML=`<p style="font-size:12px;color:hsl(0 0% 28%);text-align:center;padding-top:28px;">Slot ${s.dataset.slot}</p>`; });
+    const d = testiDrag;
+    slot.innerHTML=`<div class="testi-card" data-id="${d.id}"><p style="font-size:12px;font-weight:600;color:#e5e5e5;margin-bottom:2px;">${d.author}</p><p style="font-size:11px;color:hsl(0 0% 42%);">${d.role}</p><p style="font-size:11px;color:hsl(0 0% 50%);margin-top:5px;line-height:1.5;">${d.quote}…</p><button onclick="removeTestitSlot(this)" style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:4px;background:hsl(0 0% 10%);border:1px solid hsl(0 0% 16%);color:hsl(0 0% 45%);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;">✕</button></div>`;
+    enableTesti(); testiDrag=null;
+}
+function removeTestitSlot(btn) { const s=btn.closest('.testi-slot'); s.innerHTML=`<p style="font-size:12px;color:hsl(0 0% 28%);text-align:center;padding-top:28px;">Slot ${s.dataset.slot}</p>`; enableTesti(); }
+function enableTesti() { const b=document.getElementById('save-testi-btn'); b.disabled=false;b.style.opacity='';b.style.cursor=''; }
+
+document.getElementById('save-testi-btn').addEventListener('click', async ()=>{
+    const ids=[...document.querySelectorAll('.testi-slot')].map(s=>{ const c=s.querySelector('.testi-card'); return c?+c.dataset.id:null; }).filter(Boolean);
+    const btn=document.getElementById('save-testi-btn'); btn.textContent='…'; btn.disabled=true;
+    const r=await fetch(TESTI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ids)});
+    if(r.ok){showToast('Témoignages sauvegardés.','success');btn.textContent='✓ Sauvegardé';setTimeout(()=>{btn.textContent='Sauvegarder';btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';},2500);}
+    else{btn.textContent='Erreur';btn.disabled=false;}
+});
+
+/* ── Services ── */
+function onServiceChange() {
+    const n = document.querySelectorAll('.service-check:checked').length;
+    if (n>3) { event.target.checked=false; alert('Maximum 3 services.'); return; }
+    const b=document.getElementById('save-services-btn'); b.disabled=false;b.style.opacity='';b.style.cursor='';
+}
+document.getElementById('save-services-btn').addEventListener('click', async ()=>{
+    const ids=[...document.querySelectorAll('.service-check:checked')].map(c=>+c.dataset.id);
+    const btn=document.getElementById('save-services-btn'); btn.textContent='…'; btn.disabled=true;
+    const r=await fetch(SERVICE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ids)});
+    if(r.ok){showToast('Services sauvegardés.','success');btn.textContent='✓ Sauvegardé';setTimeout(()=>{btn.textContent='Sauvegarder';btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';},2500);}
+    else{btn.textContent='Erreur';btn.disabled=false;}
+});
+
+window.addEventListener('beforeunload', e => {
+    const dirty = document.getElementById('save-grid-btn')?.disabled === false;
+    if (dirty) { e.preventDefault(); e.returnValue=''; }
+});
+</script>
+{% endblock %}

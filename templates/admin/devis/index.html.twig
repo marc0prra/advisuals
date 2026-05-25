@@ -1,91 +1,95 @@
 {% extends 'admin/base.html.twig' %}
-
-{% block title %}Devis — Backoffice AD Visuals{% endblock %}
+{% block title %}Devis — Backoffice{% endblock %}
 {% block page_title %}Gestion des devis{% endblock %}
 
 {% block content %}
-
-<div class="rounded-xl border border-gray-800 overflow-hidden" style="background-color: #0d0d0d;">
-    <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-        <h2 class="text-sm font-semibold text-white">Toutes les demandes</h2>
-        <span class="text-xs text-gray-500">{{ requests | length }} demande(s)</span>
+<div class="admin-card a-reveal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+            <h2 style="font-size:14px;font-weight:600;color:#fff;">Toutes les demandes</h2>
+        </div>
+        <span style="font-size:12px;color:hsl(0 0% 40%);">{{ requests|length }} demande(s)</span>
     </div>
 
     {% if requests is empty %}
-        <div class="px-6 py-10 text-center text-gray-500 text-sm italic">Aucune demande de devis reçue.</div>
+    <div style="text-align:center;padding:50px;font-size:13px;color:hsl(0 0% 35%);font-style:italic;">
+        Aucune demande de devis reçue.
+    </div>
     {% else %}
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-xs uppercase tracking-widest text-gray-500 border-b border-gray-800">
-                        <th class="px-6 py-3">Date</th>
-                        <th class="px-6 py-3">Client</th>
-                        <th class="px-6 py-3">Contact</th>
-                        <th class="px-6 py-3">Service</th>
-                        <th class="px-6 py-3">Montant</th>
-                        <th class="px-6 py-3">Statut</th>
-                        <th class="px-6 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-800">
-                    {% for req in requests %}
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="px-6 py-4 text-gray-400 whitespace-nowrap">{{ req.createdAt | date('d/m/Y H:i') }}</td>
-                            <td class="px-6 py-4">
-                                <p class="text-white font-medium">{{ req.clientName }}</p>
-                                <p class="text-gray-500 text-xs">{{ req.clientPhone }}</p>
-                            </td>
-                            <td class="px-6 py-4 text-gray-400">
-                                <a href="mailto:{{ req.clientEmail }}" class="hover:underline" style="text-decoration-color: #C5A059;">{{ req.clientEmail }}</a>
-                            </td>
-                            <td class="px-6 py-4 text-gray-400">
-                                {{ services[req.serviceId] ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 font-bold" style="color: #C5A059;">
-                                {{ req.totalEstimated | number_format(0, ',', ' ') }} €
-                            </td>
-                            <td class="px-6 py-4">
-                                {% if req.status == 'en_attente' %}
-                                    <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-900/50 text-yellow-300 border border-yellow-700">En attente</span>
-                                {% elseif req.status == 'accepte' %}
-                                    <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-900/50 text-green-300 border border-green-700">Accepté</span>
-                                {% else %}
-                                    <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-700">Refusé</span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4">
-                                {% if req.status == 'en_attente' %}
-                                    <div class="flex gap-2">
-                                        <form method="post" action="{{ path('app_admin_devis_accept', {id: req.id}) }}" onsubmit="return confirm('Accepter ce devis de {{ req.totalEstimated }}€ ?')">
-                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('devis_admin') }}">
-                                            <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-colors bg-green-900/50 text-green-300 border border-green-700 hover:bg-green-800/50">
-                                                Accepter
-                                            </button>
-                                        </form>
-                                        <form method="post" action="{{ path('app_admin_devis_refuse', {id: req.id}) }}" onsubmit="return confirm('Refuser ce devis ?')">
-                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('devis_admin') }}">
-                                            <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-colors bg-red-900/50 text-red-300 border border-red-700 hover:bg-red-800/50">
-                                                Refuser
-                                            </button>
-                                        </form>
-                                    </div>
-                                {% else %}
-                                    <span class="text-gray-600 text-xs italic">Traité</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% if req.message %}
-                            <tr class="border-b border-gray-800 bg-black/20">
-                                <td colspan="7" class="px-6 py-3">
-                                    <p class="text-gray-500 text-xs"><span class="text-gray-400 font-medium">Message :</span> {{ req.message }}</p>
-                                </td>
-                            </tr>
-                        {% endif %}
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+                <tr style="border-bottom:1px solid hsl(0 0% 10%);">
+                    {% for h in ['Date','Client','Contact','Service','Montant','Statut','Actions'] %}
+                    <th style="padding:9px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:hsl(0 0% 38%);white-space:nowrap;">{{ h }}</th>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr style="border-bottom:1px solid hsl(0 0% 7%);transition:background .1s;"
+                    onmouseover="this.style.background='hsl(0 0% 6%)'"
+                    onmouseout="this.style.background=''">
+                    <td style="padding:12px;color:hsl(0 0% 45%);white-space:nowrap;">{{ req.createdAt|date('d/m/Y H:i') }}</td>
+                    <td style="padding:12px;">
+                        <p style="color:#e5e5e5;font-weight:500;">{{ req.clientName }}</p>
+                        <p style="font-size:11px;color:hsl(0 0% 40%);margin-top:2px;">{{ req.clientPhone }}</p>
+                    </td>
+                    <td style="padding:12px;">
+                        <a href="mailto:{{ req.clientEmail }}"
+                           style="color:hsl(0 0% 55%);text-decoration:none;transition:color .15s;"
+                           onmouseover="this.style.color='#C5A059'" onmouseout="this.style.color='hsl(0 0% 55%)'">{{ req.clientEmail }}</a>
+                    </td>
+                    <td style="padding:12px;color:hsl(0 0% 50%);">{{ services[req.serviceId] ?? 'N/A' }}</td>
+                    <td style="padding:12px;font-weight:700;color:#C5A059;white-space:nowrap;">{{ req.totalEstimated|number_format(0, ',', ' ') }} €</td>
+                    <td style="padding:12px;">
+                        {% if req.status == 'en_attente' %}
+                        <span style="padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;background:hsl(48 60% 10%);color:hsl(48 80% 65%);border:1px solid hsl(48 60% 18%);white-space:nowrap;">En attente</span>
+                        {% elseif req.status == 'accepte' %}
+                        <span style="padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;background:hsl(142 40% 8%);color:hsl(142 55% 58%);border:1px solid hsl(142 40% 16%);">Accepté</span>
+                        {% else %}
+                        <span style="padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;background:hsl(0 40% 8%);color:hsl(0 55% 58%);border:1px solid hsl(0 40% 16%);">Refusé</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:12px;">
+                        {% if req.status == 'en_attente' %}
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <form method="post" action="{{ path('app_admin_devis_accept', {id: req.id}) }}">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('devis_admin') }}">
+                                <button type="submit" class="btn-ghost"
+                                        style="font-size:11px;padding:5px 11px;color:hsl(142 55% 55%);border-color:hsl(142 40% 16%);"
+                                        onclick="return confirm('Accepter ce devis ?')">
+                                    Accepter
+                                </button>
+                            </form>
+                            <form method="post" action="{{ path('app_admin_devis_refuse', {id: req.id}) }}">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('devis_admin') }}">
+                                <button type="submit" class="btn-danger"
+                                        style="font-size:11px;padding:5px 11px;"
+                                        onclick="return confirm('Refuser ce devis ?')">
+                                    Refuser
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <span style="font-size:12px;color:hsl(0 0% 32%);font-style:italic;">Traité</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if req.message %}
+                <tr style="border-bottom:1px solid hsl(0 0% 7%);background:hsl(0 0% 4%);">
+                    <td colspan="7" style="padding:8px 12px;">
+                        <span style="font-size:12px;color:hsl(0 0% 40%);">
+                            <strong style="color:hsl(0 0% 55%);">Message :</strong> {{ req.message }}
+                        </span>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% endif %}
 </div>
-
 {% endblock %}

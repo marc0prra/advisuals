@@ -1,0 +1,122 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}{{ isNew ? 'Nouveau projet' : 'Modifier — ' ~ project.title }} — Backoffice{% endblock %}
+{% block page_title %}{{ isNew ? 'Nouveau projet' : 'Modifier le projet' }}{% endblock %}
+
+{% block content %}
+<div class="a-reveal">
+
+    <a href="{{ path('admin_portfolio_index') }}" class="btn-ghost" style="margin-bottom:28px; display:inline-flex;">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Retour au portfolio
+    </a>
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        <div class="admin-card" style="display:flex; flex-direction:column; gap:20px;">
+
+            {# Title + Category row #}
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label class="admin-label" for="title">Titre <span>*</span></label>
+                    <input class="admin-input" type="text" id="title" name="title" required
+                           value="{{ project.title ?? '' }}" placeholder="Nom du projet">
+                </div>
+                <div>
+                    <label class="admin-label" for="category">Catégorie <span>*</span></label>
+                    <select class="admin-select" id="category" name="category" required>
+                        <option value="">— Choisir —</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {{ project.category == cat ? 'selected' : '' }}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            {# Description #}
+            <div>
+                <label class="admin-label" for="description">Description</label>
+                <textarea class="admin-textarea" id="description" name="description" rows="4"
+                          placeholder="Courte description du projet…">{{ project.description ?? '' }}</textarea>
+            </div>
+
+            {# Image #}
+            <div>
+                <label class="admin-label">Image</label>
+                <div style="display:grid; grid-template-columns:{{ project.imagePath ? '140px 1fr' : '1fr' }}; gap:16px; align-items:start;">
+                    {% if project.imagePath %}
+                    <div>
+                        <img src="{{ asset(project.imagePath) }}" alt="Image actuelle"
+                             id="current-img"
+                             style="width:140px; height:90px; object-fit:cover; border-radius:8px; border:1px solid hsl(0 0% 12%);">
+                        <p style="font-size:10px; color:hsl(0 0% 35%); margin-top:4px;">Image actuelle</p>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <label class="admin-dropzone" id="drop-zone">
+                            <svg style="width:24px;height:24px;color:hsl(0 0% 30%);margin-bottom:8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            <p style="font-size:12px; color:hsl(0 0% 45%);">Déposer ou <span style="color:#C5A059;">parcourir</span></p>
+                            <p style="font-size:11px; color:hsl(0 0% 30%); margin-top:2px;">JPG, PNG, WebP</p>
+                            <input type="file" name="imageFile" id="imageFile" accept="image/*"
+                                   style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;"
+                                   onchange="previewFile(this)">
+                        </label>
+                        <div id="file-preview" style="display:none; margin-top:10px;">
+                            <img id="preview-img" src="" alt="Aperçu"
+                                 style="width:140px;height:90px;object-fit:cover;border-radius:8px;border:1px solid hsl(0 0% 12%);">
+                        </div>
+                        <div style="margin-top:10px;">
+                            <p style="font-size:11px; color:hsl(0 0% 35%); margin-bottom:6px;">— ou URL directe —</p>
+                            <input class="admin-input" type="url" name="imageUrl"
+                                   value="{{ (project.imagePath and not (project.imagePath starts with 'uploads/')) ? project.imagePath : '' }}"
+                                   placeholder="https://…">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Featured #}
+            <label style="display:flex; align-items:center; gap:12px; padding:14px 16px; background:hsl(0 0% 7%); border:1px solid hsl(0 0% 12%); border-radius:8px; cursor:pointer;">
+                <input type="checkbox" id="isFeatured" name="isFeatured" value="1"
+                       {{ project.isFeatured ? 'checked' : '' }}
+                       style="width:16px;height:16px;accent-color:#C5A059;flex-shrink:0;">
+                <div>
+                    <p style="font-size:13px;font-weight:500;color:#e5e5e5;">Mettre en avant sur l'accueil</p>
+                    <p style="font-size:11px;color:hsl(0 0% 42%);margin-top:2px;">Apparaîtra dans la grille principale.</p>
+                </div>
+            </label>
+
+            {# Actions #}
+            <div style="display:flex; gap:10px; padding-top:4px;">
+                <button type="submit" class="btn-gold">
+                    {{ isNew ? 'Créer le projet' : 'Enregistrer les modifications' }}
+                </button>
+                <a href="{{ path('admin_portfolio_index') }}" class="btn-ghost">Annuler</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function previewFile(input) {
+    if (!input.files?.[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('preview-img').src = e.target.result;
+        document.getElementById('file-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+const dz = document.getElementById('drop-zone');
+if (dz) {
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = '#C5A059'; });
+    dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+    dz.addEventListener('drop', e => {
+        e.preventDefault(); dz.style.borderColor = '';
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        const input = document.getElementById('imageFile');
+        const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+        previewFile(input);
+    });
+}
+</script>
+{% endblock %}

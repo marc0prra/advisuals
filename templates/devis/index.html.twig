@@ -1,137 +1,190 @@
-{# templates/devis/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Simuler un devis | Ad Visuals{% endblock %}
+{% block title %}Simulateur de devis — Adrien Mihajlovic{% endblock %}
 
 {% block body %}
-    <section class="pt-32 pb-24 bg-gradient-to-b from-[#0d0d0d] to-[#0a0a0a]">
-        <div class="container mx-auto px-4 max-w-4xl" data-controller="quote-simulator">
-            
-            {# En-tête (Maquette: QuoteSimulator.tsx header) #}
-            <div class="text-center mb-16">
-                <h1 class="font-serif text-4xl sm:text-5xl font-light mb-4 text-white">Simulateur de Devis</h1>
-                <p class="text-gray-400 leading-relaxed max-w-2xl mx-auto">
-                    Obtenez une estimation immédiate de votre projet photographique
-                </p>
-                <p class="text-xs text-[#C5A059] mt-3 italic tracking-widest uppercase">
-                    L'établissement d'un devis personnalisé est entièrement gratuit
-                </p>
+
+{# Hero #}
+<section class="pt-40 pb-20 border-b" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-4xl mx-auto px-6">
+        <span class="section-label">Devis gratuit</span>
+        <h1 class="font-serif font-light text-white mb-4" style="font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.05;">
+            Simulez votre projet
+        </h1>
+        <p class="text-sm" style="color: #6b7280;">
+            Estimation immédiate — gratuite &amp; sans engagement.
+        </p>
+    </div>
+</section>
+
+{# Simulateur #}
+<section class="py-20" style="background-color: #0a0a0a;">
+    <div class="max-w-4xl mx-auto px-6" data-controller="quote-simulator">
+
+        {% for flash_message in app.flashes('devis_success') %}
+            <div class="mb-8 px-5 py-4 text-sm border" role="alert"
+                 style="background-color: #0f1a0f; border-color: rgba(74,222,128,0.2); color: #86efac;">
+                {{ flash_message }}
+            </div>
+        {% endfor %}
+
+        {# Card principale #}
+        <div class="border" style="background-color: #0f0f0f; border-color: rgba(255,255,255,0.07);">
+            <div class="p-8 md:p-12">
+
+                {# Sélecteur service #}
+                <div class="mb-10">
+                    <label for="service-select" class="form-label">Type de prestation</label>
+                    <select
+                        id="service-select"
+                        data-quote-simulator-target="service"
+                        data-action="change->quote-simulator#calculate"
+                        class="form-input font-serif font-light text-base"
+                        style="background-color: transparent;"
+                    >
+                        <option value="" style="background-color: #0f0f0f;">Choisissez un service</option>
+                        {% for service in services %}
+                            <option value="{{ service.basePrice }}" style="background-color: #0f0f0f;">
+                                {{ service.label }} — à partir de {{ service.basePrice }}€
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# Sélecteur durée #}
+                <div class="mb-10">
+                    <label for="duration-select" class="form-label">Durée estimée</label>
+                    <select
+                        id="duration-select"
+                        data-quote-simulator-target="duration"
+                        data-action="change->quote-simulator#calculate"
+                        class="form-input font-serif font-light text-base"
+                        style="background-color: transparent;"
+                    >
+                        <option value="" style="background-color: #0f0f0f;">Choisissez une durée</option>
+                        <option value="1"   style="background-color: #0f0f0f;">2 heures — Standard</option>
+                        <option value="1.6" style="background-color: #0f0f0f;">4 heures — Demi-journée</option>
+                        <option value="2.8" style="background-color: #0f0f0f;">Journée complète</option>
+                        <option value="4"   style="background-color: #0f0f0f;">Plusieurs jours</option>
+                    </select>
+                </div>
+
+                {# Bouton calculer #}
+                <button
+                    data-action="click->quote-simulator#calculate"
+                    class="btn-primary w-full">
+                    Calculer l'estimation
+                </button>
+
+                {# Résultat #}
+                <div data-quote-simulator-target="resultContainer"
+                     class="hidden mt-10 pt-10 border-t text-center"
+                     style="border-color: rgba(255,255,255,0.06);">
+                    <p class="text-xs uppercase tracking-widest mb-3" style="color: #6b7280;">Estimation indicative</p>
+                    <p class="font-serif text-6xl font-light mb-3" style="color: #C5A059;">
+                        <span data-quote-simulator-target="price">0</span>
+                    </p>
+                    <p class="text-xs italic" style="color: #4b5563;">
+                        Prix indicatif, sujet à ajustement selon vos besoins spécifiques.
+                    </p>
+                </div>
+
             </div>
 
-            {% for flash_message in app.flashes('devis_success') %}
-                <div class="mb-8 px-6 py-4 border border-green-700 bg-green-900/30 text-green-300 text-sm text-center">
-                    {{ flash_message }}
-                </div>
-            {% endfor %}
+            {# Formulaire de demande #}
+            <div data-quote-simulator-target="formContainer"
+                 class="hidden border-t px-8 md:px-12 py-10"
+                 style="border-color: rgba(255,255,255,0.06);">
 
-            {# Card Simulateur (Maquette: Card component) #}
-            <div class="bg-[#0d0d0d] p-8 sm:p-12 border border-white/5 shadow-2xl relative overflow-hidden">
-                {# Ornement discret #}
-                <div class="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+                <h2 class="font-serif text-2xl font-light text-white mb-8">
+                    Envoyer ma demande
+                </h2>
 
-                <div class="grid gap-10 relative z-10">
-                    {# Sélection du service #}
-                    <div class="space-y-4">
-                        <label class="block text-xs uppercase tracking-[0.2em] text-gray-500 font-medium">Type de prestation</label>
-                        <select 
-                            data-quote-simulator-target="service" 
-                            data-action="change->quote-simulator#calculate" 
-                            class="w-full bg-transparent border-b border-white/10 py-4 text-lg font-serif italic outline-none focus:border-[#C5A059] transition-colors appearance-none cursor-pointer"
+                <form method="post" action="{{ path('devis_submit') }}" class="space-y-8" novalidate>
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('devis') }}">
+                    <input type="hidden" name="service_id"      data-quote-simulator-target="serviceIdField" value="">
+                    <input type="hidden" name="total_estimated"  data-quote-simulator-target="totalField" value="">
+
+                    <div class="grid sm:grid-cols-2 gap-8">
+                        <div>
+                            <label for="client-name" class="form-label">
+                                Nom complet <span style="color: #C5A059;" aria-label="requis">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="client-name"
+                                name="client_name"
+                                required
+                                autocomplete="name"
+                                placeholder="Jean Dupont"
+                                class="form-input"
+                            >
+                        </div>
+                        <div>
+                            <label for="client-email" class="form-label">
+                                Email <span style="color: #C5A059;" aria-label="requis">*</span>
+                            </label>
+                            <input
+                                type="email"
+                                id="client-email"
+                                name="client_email"
+                                required
+                                autocomplete="email"
+                                placeholder="jean@exemple.fr"
+                                class="form-input"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="client-phone" class="form-label">Téléphone (optionnel)</label>
+                        <input
+                            type="tel"
+                            id="client-phone"
+                            name="client_phone"
+                            autocomplete="tel"
+                            placeholder="06 00 00 00 00"
+                            class="form-input"
                         >
-                            <option value="" class="bg-[#0a0a0a]">Sélectionnez un type de service</option>
-                            {% for service in services %}
-                                <option value="{{ service.basePrice }}" class="bg-[#0a0a0a]">
-                                    {{ service.label }} (Base: {{ service.basePrice }}€)
-                                </option>
-                            {% endfor %}
-                        </select>
                     </div>
 
-                    {# Sélection de la durée #}
-                    <div class="space-y-4">
-                        <label class="block text-xs uppercase tracking-[0.2em] text-gray-500 font-medium">Durée estimée</label>
-                        <select 
-                            data-quote-simulator-target="duration" 
-                            data-action="change->quote-simulator#calculate" 
-                            class="w-full bg-transparent border-b border-white/10 py-4 text-lg font-serif italic outline-none focus:border-[#C5A059] transition-colors appearance-none cursor-pointer"
-                        >
-                            <option value="" class="bg-[#0a0a0a]">Sélectionnez une durée</option>
-                            <option value="1" class="bg-[#0a0a0a]">2 heures (Standard)</option>
-                            <option value="1.6" class="bg-[#0a0a0a]">4 heures (Demi-journée)</option>
-                            <option value="2.8" class="bg-[#0a0a0a]">Journée complète</option>
-                            <option value="4" class="bg-[#0a0a0a]">Plusieurs jours</option>
-                        </select>
+                    <div>
+                        <label for="client-message" class="form-label">
+                            Décrivez votre projet <span style="color: #C5A059;" aria-label="requis">*</span>
+                        </label>
+                        <textarea
+                            id="client-message"
+                            name="message"
+                            required
+                            rows="4"
+                            placeholder="Vision, contexte, dates souhaitées..."
+                            class="form-input resize-none"
+                        ></textarea>
                     </div>
 
-                    {# Résultat (Maquette: Estimated price block) #}
-                    <div data-quote-simulator-target="resultContainer" class="hidden mt-6 p-8 bg-[#C5A059]/5 border border-[#C5A059]/20 text-center group">
-                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-2">Estimation indicative</p>
-                        <p class="font-serif text-5xl font-semibold text-[#C5A059] mb-3" data-quote-simulator-target="price">0€</p>
-                        <p class="text-[10px] text-gray-600 italic">
-                            *Prix indicatif, sujet à ajustements selon les besoins spécifiques
-                        </p>
-                    </div>
-
-                    {# Bouton pour révéler le formulaire (si non automatique) #}
-                    <div class="pt-4 text-center">
-                         <button 
-                            data-action="click->quote-simulator#calculate"
-                            class="w-full sm:w-auto px-12 py-4 bg-[#C5A059] text-black font-bold uppercase text-xs tracking-[0.2em] hover:bg-white transition-all duration-300"
-                        >
-                            Calculer l'estimation
-                        </button>
-                    </div>
-                    
-                    {# Formulaire de contact (Maquette: Contact Form section) #}
-                    <div data-quote-simulator-target="formContainer" class="hidden mt-12 pt-12 border-t border-white/5">
-                         <h3 class="font-serif text-3xl font-light mb-8 text-white">Demander un devis personnalisé</h3>
-
-                         {% for flash_message in app.flashes('devis_success') %}
-                            <div class="mb-6 px-4 py-3 border border-green-700 bg-green-900/30 text-green-300 text-sm">
-                                {{ flash_message }}
-                            </div>
-                         {% endfor %}
-
-                         <form method="post" action="{{ path('devis_submit') }}" class="grid gap-8"
-                               data-quote-simulator-target="submitForm">
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('devis') }}">
-                            <input type="hidden" name="service_id" data-quote-simulator-target="serviceIdField" value="">
-                            <input type="hidden" name="total_estimated" data-quote-simulator-target="totalField" value="">
-
-                            <div class="grid sm:grid-cols-2 gap-8">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] uppercase tracking-widest text-gray-500">Nom complet</label>
-                                    <input type="text" name="client_name" required placeholder="Jean Dupont" class="w-full bg-transparent border-b border-white/10 py-3 outline-none focus:border-[#C5A059] text-sm text-white">
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] uppercase tracking-widest text-gray-500">Email</label>
-                                    <input type="email" name="client_email" required placeholder="jean@exemple.fr" class="w-full bg-transparent border-b border-white/10 py-3 outline-none focus:border-[#C5A059] text-sm text-white">
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] uppercase tracking-widest text-gray-500">Téléphone (optionnel)</label>
-                                <input type="tel" name="client_phone" placeholder="06 00 00 00 00" class="w-full bg-transparent border-b border-white/10 py-3 outline-none focus:border-[#C5A059] text-sm text-white">
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] uppercase tracking-widest text-gray-500">Détails du projet</label>
-                                <textarea name="message" required rows="4" placeholder="Décrivez votre vision, dates souhaitées..." class="w-full bg-transparent border-b border-white/10 py-3 outline-none focus:border-[#C5A059] text-sm resize-none text-white"></textarea>
-                            </div>
-                            <button type="submit" class="w-full py-4 border border-white/20 uppercase text-[10px] tracking-[0.3em] font-bold hover:bg-white hover:text-black transition-all text-white">
-                                Envoyer la demande
-                            </button>
-                         </form>
-                    </div>
-                </div>
-            </div>
-
-            {# Support (Maquette: Footer info) #}
-            <div class="mt-16 text-center">
-                <p class="text-sm text-gray-500 mb-4">Besoin d'informations complémentaires ?</p>
-                <a href="mailto:adrienmihajlovic.pro@gmail.com" class="text-[#C5A059] hover:text-white transition-colors flex items-center justify-center gap-2 text-sm font-medium">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    adrienmihajlovic.pro@gmail.com
-                </a>
+                    <button type="submit" class="btn-primary w-full">
+                        Envoyer la demande
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </button>
+                </form>
             </div>
         </div>
-    </section>
+
+        {# Note bas de page #}
+        <div class="mt-12 text-center">
+            <p class="text-xs mb-3" style="color: #4b5563;">
+                Une question ? Contactez directement par email.
+            </p>
+            <a href="mailto:adrienmihajlovic.pro@gmail.com"
+               class="text-xs transition-colors hover:text-white"
+               style="color: #C5A059;">
+                adrienmihajlovic.pro@gmail.com
+            </a>
+        </div>
+
+    </div>
+</section>
+
 {% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Services — Backoffice{% endblock %}
+{% block page_title %}Gestion des services{% endblock %}
+
+{% block content %}
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;" class="a-reveal">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+        <h2 style="font-size:14px;font-weight:600;color:#fff;">{{ services|length }} service(s)</h2>
+    </div>
+    <a href="{{ path('admin_services_new') }}" class="btn-gold">
+        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nouveau service
+    </a>
+</div>
+
+{% if services is empty %}
+<div class="admin-card a-reveal" style="text-align:center;padding:60px;font-size:13px;color:hsl(0 0% 35%);font-style:italic;">
+    Aucun service créé. <a href="{{ path('admin_services_new') }}" style="color:#C5A059;">Créer le premier</a>
+</div>
+{% else %}
+
+{# Group by category #}
+{% set categories = services|map(s => s.category)|unique|sort %}
+
+{% for cat in categories %}
+<div class="admin-card a-reveal" style="margin-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid hsl(0 0% 10%);">
+        <span style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#C5A059;font-weight:600;">{{ cat }}</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+        {% for service in services if service.category == cat %}
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 14px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;">
+
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                    <span style="font-size:13px;font-weight:600;color:#e5e5e5;">{{ service.label }}</span>
+                    {% if service.isIsFeatured %}
+                    <span class="badge-gold">Accueil</span>
+                    {% endif %}
+                </div>
+                <p style="font-size:12px;color:hsl(0 0% 45%);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px;">
+                    {{ service.description|slice(0, 120) }}{% if service.description|length > 120 %}…{% endif %}
+                </p>
+            </div>
+
+            <div style="flex-shrink:0;text-align:right;margin-right:16px;">
+                <span style="font-size:15px;font-weight:700;color:#C5A059;">{{ service.basePrice|number_format(0, ',', ' ') }} €</span>
+                <p style="font-size:10px;color:hsl(0 0% 38%);margin-top:1px;">prix de base</p>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+                <a href="{{ path('admin_services_edit', {id: service.id}) }}" class="btn-ghost" style="font-size:12px;padding:6px 12px;">
+                    Modifier
+                </a>
+                <button type="button" class="btn-danger" style="font-size:12px;padding:6px 12px;"
+                        onclick="openDeleteModal({
+                            action: '{{ path('admin_services_delete', {id: service.id}) }}',
+                            token: '{{ csrf_token('delete_service_' ~ service.id) }}',
+                            description: 'Supprimer le service « {{ service.label|e('js') }} » ?'
+                        })">
+                    Supprimer
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}

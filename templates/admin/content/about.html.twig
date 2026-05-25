@@ -1,0 +1,254 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}À propos — Backoffice{% endblock %}
+{% block page_title %}Page « À propos »{% endblock %}
+
+{% block content %}
+
+{# ── Bio ── #}
+<section class="admin-card a-reveal" style="margin-bottom:24px;" id="bio">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+        <div style="width:3px;height:20px;background:#C5A059;border-radius:2px;"></div>
+        <h2 style="font-size:14px;font-weight:600;color:#fff;">Biographie & Parcours</h2>
+    </div>
+
+    <form action="{{ path('admin_content_about') }}" method="POST" enctype="multipart/form-data"
+          style="display:flex;flex-direction:column;gap:16px;">
+
+        <div>
+            <label class="admin-label" for="bioIntro">Introduction (accroche)</label>
+            <input class="admin-input" type="text" id="bioIntro" name="bioIntro"
+                   value="{{ settings.aboutBioIntro }}" placeholder="Photographe basé à Paris…">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label class="admin-label" for="bio1">Paragraphe 1</label>
+                <textarea class="admin-textarea" id="bio1" name="bio1" rows="6"
+                          placeholder="Premier paragraphe…">{{ settings.aboutBio1 }}</textarea>
+            </div>
+            <div>
+                <label class="admin-label" for="bio2">Paragraphe 2</label>
+                <textarea class="admin-textarea" id="bio2" name="bio2" rows="6"
+                          placeholder="Second paragraphe…">{{ settings.aboutBio2 }}</textarea>
+            </div>
+        </div>
+
+        <div>
+            <label class="admin-label" for="quote">Citation</label>
+            <input class="admin-input" type="text" id="quote" name="quote"
+                   value="{{ settings.aboutQuote }}" placeholder="« La photographie, c'est… »">
+        </div>
+
+        <div>
+            <label class="admin-label">Portrait</label>
+            <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+                {% if settings.aboutPortraitPath %}
+                <img src="{{ asset(settings.aboutPortraitPath) }}" alt="Portrait actuel"
+                     style="width:90px;height:112px;object-fit:cover;border-radius:8px;border:1px solid hsl(0 0% 12%);flex-shrink:0;">
+                {% endif %}
+                <div style="flex:1; min-width:200px;">
+                    <label class="admin-dropzone" style="margin-bottom:8px;">
+                        <svg style="width:20px;height:20px;color:hsl(0 0% 30%);margin-bottom:6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        <p style="font-size:12px;color:hsl(0 0% 45%);">Choisir ou déposer</p>
+                        <input type="file" name="portraitFile" accept="image/*"
+                               style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+                    </label>
+                    <input class="admin-input" type="url" name="portraitUrl"
+                           placeholder="ou URL directe…">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <button type="submit" class="btn-gold">Enregistrer la biographie</button>
+        </div>
+    </form>
+</section>
+
+{# ── Skills ── #}
+<section class="admin-card a-reveal a-reveal-d1" style="margin-bottom:24px;" id="skills">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:3px;height:20px;background:#C5A059;border-radius:2px;"></div>
+            <h2 style="font-size:14px;font-weight:600;color:#fff;">Compétences & Expériences</h2>
+        </div>
+        <span style="font-size:11px;color:hsl(0 0% 35%);">Glissez pour réordonner</span>
+    </div>
+
+    <div id="skills-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        {% for skill in skills %}
+        <div class="skill-item" data-id="{{ skill.id }}" draggable="true"
+             style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;cursor:grab;transition:border-color .15s;">
+
+            <div style="color:hsl(0 0% 30%);flex-shrink:0;cursor:grab;">
+                <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+            </div>
+
+            <div style="flex:1;min-width:0;" id="skill-view-{{ skill.id }}">
+                <p style="font-size:13px;font-weight:500;color:#e5e5e5;">{{ skill.title }}</p>
+                <p style="font-size:11px;color:hsl(0 0% 45%);margin-top:2px;">{{ skill.description }}</p>
+            </div>
+
+            <form id="skill-form-{{ skill.id }}" action="{{ path('admin_skill_edit', {id: skill.id}) }}" method="POST"
+                  style="display:none;flex:1;gap:8px;flex-direction:column;">
+                <input class="admin-input" type="text" name="title" value="{{ skill.title }}">
+                <textarea class="admin-textarea" name="description" rows="2">{{ skill.description }}</textarea>
+                <div style="display:flex;gap:8px;">
+                    <button type="submit" class="btn-gold" style="font-size:12px;padding:7px 14px;">Enregistrer</button>
+                    <button type="button" class="btn-ghost" style="font-size:12px;padding:7px 14px;"
+                            onclick="toggleSkillEdit({{ skill.id }}, false)">Annuler</button>
+                </div>
+            </form>
+
+            <div style="display:flex;gap:6px;flex-shrink:0;" id="skill-actions-{{ skill.id }}">
+                <button type="button" onclick="toggleSkillEdit({{ skill.id }}, true)"
+                        style="width:30px;height:30px;border-radius:6px;background:transparent;border:1px solid hsl(0 0% 14%);color:hsl(0 0% 45%);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
+                        onmouseover="this.style.color='#fff';this.style.borderColor='hsl(0 0% 25%)';"
+                        onmouseout="this.style.color='hsl(0 0% 45%)';this.style.borderColor='hsl(0 0% 14%)';">
+                    <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
+                <button type="button"
+                        onclick="openDeleteModal({action:'{{ path('admin_skill_delete', {id: skill.id}) }}', description:'Supprimer la compétence « {{ skill.title|e('js') }} » ?'})"
+                        style="width:30px;height:30px;border-radius:6px;background:transparent;border:1px solid rgba(248,113,113,.2);color:#f87171;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
+                        onmouseover="this.style.background='rgba(248,113,113,.1)';"
+                        onmouseout="this.style.background='transparent';">
+                    <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Add skill #}
+    <form action="{{ path('admin_skill_new') }}" method="POST"
+          style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input class="admin-input" type="text" name="title" required
+               placeholder="Titre de la nouvelle compétence" style="flex:1; min-width:200px;">
+        <button type="submit" class="btn-gold" style="flex-shrink:0;">+ Ajouter</button>
+    </form>
+</section>
+
+{# ── Approach ── #}
+<section class="admin-card a-reveal a-reveal-d2" id="approach">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:3px;height:20px;background:#C5A059;border-radius:2px;"></div>
+            <h2 style="font-size:14px;font-weight:600;color:#fff;">Mon Approche</h2>
+        </div>
+        <span style="font-size:11px;color:hsl(0 0% 35%);">Glissez pour réordonner</span>
+    </div>
+
+    <div id="steps-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        {% for step in steps %}
+        <div class="step-item" data-id="{{ step.id }}" draggable="true"
+             style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;cursor:grab;">
+
+            <div style="color:hsl(0 0% 30%);flex-shrink:0;">
+                <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+            </div>
+
+            <div style="flex:1;min-width:0;">
+                <p style="font-size:13px;font-weight:500;color:#e5e5e5;">{{ step.title }}</p>
+                <p style="font-size:11px;color:hsl(0 0% 45%);margin-top:2px;">{{ step.description }}</p>
+            </div>
+
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+                <button type="button"
+                        onclick="openStepEdit({{ step.id }}, '{{ step.title|e('js') }}', `{{ step.description|e('js') }}`)"
+                        style="width:30px;height:30px;border-radius:6px;background:transparent;border:1px solid hsl(0 0% 14%);color:hsl(0 0% 45%);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
+                        onmouseover="this.style.color='#fff';this.style.borderColor='hsl(0 0% 25%)';"
+                        onmouseout="this.style.color='hsl(0 0% 45%)';this.style.borderColor='hsl(0 0% 14%)';">
+                    <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
+                <button type="button"
+                        onclick="openDeleteModal({action:'{{ path('admin_step_delete', {id: step.id}) }}', description:'Supprimer l\\'étape « {{ step.title|e('js') }} » ?'})"
+                        style="width:30px;height:30px;border-radius:6px;background:transparent;border:1px solid rgba(248,113,113,.2);color:#f87171;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
+                        onmouseover="this.style.background='rgba(248,113,113,.1)';"
+                        onmouseout="this.style.background='transparent';">
+                    <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form action="{{ path('admin_step_new') }}" method="POST"
+          style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input class="admin-input" type="text" name="title" required
+               placeholder="Titre de la nouvelle étape" style="flex:1; min-width:200px;">
+        <button type="submit" class="btn-gold" style="flex-shrink:0;">+ Ajouter</button>
+    </form>
+</section>
+
+{# Step edit modal #}
+<div id="step-modal"
+     style="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:hsl(0 0% 6%);border:1px solid hsl(0 0% 14%);border-radius:14px;padding:28px;width:100%;max-width:480px;margin:16px;">
+        <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:20px;">Modifier l'étape</h3>
+        <form id="step-edit-form" method="POST" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+                <label class="admin-label">Titre</label>
+                <input class="admin-input" type="text" id="step-title" name="title" required>
+            </div>
+            <div>
+                <label class="admin-label">Description</label>
+                <textarea class="admin-textarea" id="step-description" name="description" rows="4"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:4px;">
+                <button type="submit" class="btn-gold">Enregistrer</button>
+                <button type="button" class="btn-ghost" onclick="closeStepModal()">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+/* ── Inline skill edit ── */
+function toggleSkillEdit(id, open) {
+    document.getElementById(`skill-view-${id}`).style.display  = open ? 'none' : 'block';
+    document.getElementById(`skill-form-${id}`).style.display  = open ? 'flex' : 'none';
+    document.getElementById(`skill-actions-${id}`).style.display = open ? 'none' : 'flex';
+}
+
+/* ── Step modal ── */
+function openStepEdit(id, title, desc) {
+    document.getElementById('step-edit-form').action = `/admin/content/about/step/${id}/edit`;
+    document.getElementById('step-title').value = title;
+    document.getElementById('step-description').value = desc;
+    const m = document.getElementById('step-modal');
+    m.style.display = 'flex';
+    setTimeout(() => m.querySelector('input').focus(), 50);
+}
+function closeStepModal() { document.getElementById('step-modal').style.display = 'none'; }
+document.getElementById('step-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeStepModal(); });
+
+/* ── Drag & drop reorder ── */
+function initDragSort(listId, saveUrl) {
+    const list = document.getElementById(listId);
+    let drag = null;
+    list.addEventListener('dragstart', e => {
+        drag = e.target.closest('[data-id]');
+        setTimeout(() => { if (drag) drag.style.opacity = '.35'; }, 0);
+    });
+    list.addEventListener('dragend', () => {
+        if (drag) drag.style.opacity = '';
+        drag = null;
+        saveOrder(listId, saveUrl);
+    });
+    list.addEventListener('dragover', e => {
+        e.preventDefault();
+        const over = e.target.closest('[data-id]');
+        if (over && over !== drag) {
+            const mid = over.getBoundingClientRect().top + over.getBoundingClientRect().height / 2;
+            e.clientY < mid ? over.before(drag) : over.after(drag);
+        }
+    });
+}
+async function saveOrder(listId, url) {
+    const ids = [...document.querySelectorAll(`#${listId} [data-id]`)].map(el => +el.dataset.id);
+    await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(ids) });
+}
+initDragSort('skills-list', '{{ path('admin_reorder_skills') }}');
+initDragSort('steps-list',  '{{ path('admin_reorder_steps') }}');
+</script>
+{% endblock %}

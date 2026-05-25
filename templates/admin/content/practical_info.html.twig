@@ -1,0 +1,92 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Services — Backoffice{% endblock %}
+{% block page_title %}Informations pratiques{% endblock %}
+
+{% block content %}
+<div class="admin-card a-reveal">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <div style="width:3px;height:20px;background:#C5A059;border-radius:2px;"></div>
+        <h2 style="font-size:14px;font-weight:600;color:#fff;">Cartes d'informations pratiques</h2>
+    </div>
+    <p style="font-size:12px;color:hsl(0 0% 42%);margin-bottom:24px;margin-left:13px;">
+        Affichées sur la page Services. Modifiez et ajoutez des cartes ci-dessous.
+    </p>
+
+    <form action="{{ path('admin_practical_info') }}" method="POST" id="info-form"
+          style="display:flex;flex-direction:column;gap:0;">
+
+        <div id="infos-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+            {% for info in infos %}
+            <div class="info-row" style="position:relative;padding:16px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;">
+                <input type="hidden" name="ids[]" value="{{ info.id }}">
+                <div style="display:grid;grid-template-columns:140px 1fr 1fr;gap:12px;padding-right:36px;">
+                    <div>
+                        <label class="admin-label">Étiquette</label>
+                        <input class="admin-input" type="text" name="labels[]" value="{{ info.label }}"
+                               required placeholder="Zone">
+                    </div>
+                    <div>
+                        <label class="admin-label">Titre</label>
+                        <input class="admin-input" type="text" name="titles[]" value="{{ info.title }}"
+                               required placeholder="Paris & France entière">
+                    </div>
+                    <div>
+                        <label class="admin-label">Description</label>
+                        <input class="admin-input" type="text" name="descriptions[]" value="{{ info.description }}"
+                               placeholder="Basé à Paris…">
+                    </div>
+                </div>
+                <button type="button"
+                        onclick="openDeleteModal({action:'/admin/content/practical-info/{{ info.id }}/delete', description:'Supprimer cette carte d\\'information ?'})"
+                        style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid rgba(248,113,113,.2);color:#f87171;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
+                        onmouseover="this.style.background='rgba(248,113,113,.1)';"
+                        onmouseout="this.style.background='transparent';">
+                    <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-row-btn"
+                style="width:100%;padding:14px;border:1.5px dashed hsl(0 0% 16%);border-radius:8px;background:transparent;color:hsl(0 0% 40%);font-size:13px;cursor:pointer;transition:all .2s;margin-bottom:20px;"
+                onmouseover="this.style.borderColor='#C5A059';this.style.color='#C5A059';"
+                onmouseout="this.style.borderColor='hsl(0 0% 16%)';this.style.color='hsl(0 0% 40%)';">
+            + Ajouter une carte
+        </button>
+
+        <div>
+            <button type="submit" class="btn-gold">Enregistrer toutes les modifications</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('add-row-btn').addEventListener('click', () => {
+    const row = document.createElement('div');
+    row.className = 'info-row';
+    row.style.cssText = 'position:relative;padding:16px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;';
+    row.innerHTML = `
+        <input type="hidden" name="ids[]" value="">
+        <div style="display:grid;grid-template-columns:140px 1fr 1fr;gap:12px;padding-right:36px;">
+            <div>
+                <label class="admin-label">Étiquette</label>
+                <input class="admin-input" type="text" name="labels[]" required placeholder="Zone">
+            </div>
+            <div>
+                <label class="admin-label">Titre</label>
+                <input class="admin-input" type="text" name="titles[]" required placeholder="Paris & France">
+            </div>
+            <div>
+                <label class="admin-label">Description</label>
+                <input class="admin-input" type="text" name="descriptions[]" placeholder="Basé à Paris…">
+            </div>
+        </div>
+        <button type="button" onclick="this.closest('.info-row').remove()"
+                style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid rgba(248,113,113,.2);color:#f87171;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>`;
+    document.getElementById('infos-list').appendChild(row);
+    row.querySelector('input[name="labels[]"]').focus();
+});
+</script>
+{% endblock %}

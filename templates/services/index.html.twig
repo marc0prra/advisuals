@@ -1,132 +1,110 @@
-{# templates/services/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Services | Ad Visuals{% endblock %}
+{% block title %}Services — Adrien Mihajlovic{% endblock %}
 
 {% block body %}
-    {# Hero Section (Maquette: ServicesPage Hero) #}
-    <section class="pt-32 pb-16 bg-gradient-to-b from-[#C5A059]/10 to-[#0a0a0a]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-4xl mx-auto text-center">
-                <h1 class="font-serif text-5xl sm:text-6xl font-light mb-6 text-balance text-white">Mes Services</h1>
-                <p class="text-xl text-gray-400 leading-relaxed mb-8">
-                    Une offre complète adaptée à vos besoins photographiques, du portrait intimiste aux grands événements.
-                </p>
-                <p class="text-sm text-gray-500 italic">
-                    Tous les devis sont gratuits et personnalisés selon vos besoins spécifiques.
-                </p>
-            </div>
+
+{# Hero #}
+<section class="pt-40 pb-20 border-b" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div>
+            <span class="section-label">Ce que je propose</span>
+            <h1 class="font-serif font-light text-white" style="font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.05;">
+                Services
+            </h1>
         </div>
-    </section>
+        <p class="text-sm max-w-xs text-right" style="color: #6b7280;">
+            Devis gratuit et personnalisé.<br>Réponse garantie sous 24h.
+        </p>
+    </div>
+</section>
 
-    {# Services List (Maquette: Detailed Service Cards) #}
-    <section class="py-16 bg-[#0a0a0a]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto space-y-8">
-                {% for service in services %}
-                    <div class="p-8 bg-zinc-900/50 border border-white/5 hover:border-[#C5A059]/30 transition-all duration-500 shadow-2xl">
-                        <div class="grid lg:grid-cols-3 gap-12">
-                            
-                            {# Colonne 1: Icône, Titre et Prix #}
-                            <div class="lg:col-span-1">
-                                <div class="w-16 h-16 bg-[#C5A059]/10 flex items-center justify-center mb-6">
-                                    <svg class="w-8 h-8 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                        <circle cx="12" cy="13" r="3" stroke-width="1.5"></circle>
-                                    </svg>
-                                </div>
-                                <h2 class="font-serif text-3xl font-semibold mb-4 text-white leading-tight">{{ service.label }}</h2>
+{# Services list #}
+<section class="py-4" style="background-color: #0a0a0a;">
+    <div class="max-w-7xl mx-auto px-6">
+        {% for service in services %}
+            <article class="py-16 border-b" style="border-color: rgba(255,255,255,0.06);">
+                <div class="grid lg:grid-cols-12 gap-12">
 
-                                <div class="space-y-4 text-sm">
-                                    <div class="flex items-center gap-3 text-gray-400">
-                                        <svg class="w-5 h-5 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <span class="font-medium text-white">À partir de {{ service.basePrice }}€</span>
-                                    </div>
-                                    <div class="flex items-center gap-3 text-gray-500">
-                                        <svg class="w-5 h-5 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <span>Durée variable selon projet</span>
-                                    </div>
-                                </div>
-                            </div>
+                    {# Numéro + titre + prix #}
+                    <div class="lg:col-span-4">
+                        <p class="font-serif text-6xl font-light mb-6" style="color: rgba(255,255,255,0.07);" aria-hidden="true">
+                            0{{ loop.index }}
+                        </p>
+                        <h2 class="font-serif text-2xl text-white mb-4">{{ service.label }}</h2>
+                        <p class="text-3xl font-light" style="color: #C5A059;">
+                            {{ service.basePrice|number_format(0, ',', ' ') }} €
+                            <span class="text-sm font-normal" style="color: #6b7280;">de base</span>
+                        </p>
+                    </div>
 
-                            {# Colonne 2 & 3: Description, Inclusions et Action #}
-                            <div class="lg:col-span-2 space-y-8">
-                                <p class="text-gray-400 leading-relaxed text-lg italic">
-                                    {{ service.description }}
-                                </p>
-
-                                <div class="grid md:grid-cols-2 gap-8 pt-6 border-t border-white/5">
-                                    <div>
-                                        <h3 class="font-serif text-lg font-semibold mb-4 text-[#C5A059]">Ce qui est inclus :</h3>
-                                        <ul class="space-y-3">
-                                            <li class="flex items-start gap-3 text-sm text-gray-500">
-                                                <span class="text-[#C5A059] mt-1">✓</span> Consultation préalable pour définir votre vision
-                                            </li>
-                                            <li class="flex items-start gap-3 text-sm text-gray-500">
-                                                <span class="text-[#C5A059] mt-1">✓</span> Post-production professionnelle exigeante
-                                            </li>
-                                            <li class="flex items-start gap-3 text-sm text-gray-500">
-                                                <span class="text-[#C5A059] mt-1">✓</span> Livraison en haute définition via galerie privée
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="flex flex-col justify-end items-start md:items-end">
-                                        <p class="text-xs text-gray-500 mb-4 text-left md:text-right italic">
-                                            Idéal pour : Portraits artistiques, réseaux sociaux, identité visuelle.
-                                        </p>
-                                        <a href="{{ path('devis') }}" class="inline-block bg-[#C5A059] text-black px-10 py-4 font-bold uppercase text-[10px] tracking-[0.3em] hover:bg-white transition-all shadow-xl">
-                                            Demander un devis
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                    {# Description + inclusions #}
+                    <div class="lg:col-span-5">
+                        <p class="text-sm leading-relaxed mb-8 italic" style="color: #9ca3af;">
+                            {{ service.description }}
+                        </p>
+                        <div>
+                            <p class="text-xs uppercase tracking-widest mb-4" style="color: #C5A059;">Ce qui est inclus</p>
+                            <ul class="space-y-3 text-sm" style="color: #9ca3af;">
+                                <li class="flex items-start gap-3">
+                                    <span class="mt-0.5 flex-shrink-0" style="color: #C5A059;" aria-hidden="true">—</span>
+                                    Consultation préalable pour définir votre vision
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="mt-0.5 flex-shrink-0" style="color: #C5A059;" aria-hidden="true">—</span>
+                                    Post-production professionnelle
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="mt-0.5 flex-shrink-0" style="color: #C5A059;" aria-hidden="true">—</span>
+                                    Livraison haute résolution via galerie privée
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                {% else %}
-                    <div class="text-center py-20 border border-dashed border-white/10">
-                        <p class="text-gray-500 italic">Aucun service n'est configuré pour le moment.</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
 
-    {# Informations Pratiques (Maquette: Additional Info Section) #}
-    <section class="py-24 bg-[#0d0d0d] border-t border-white/5">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="font-serif text-3xl sm:text-4xl font-light mb-16 text-center text-white">Informations <span class="text-[#C5A059] italic">Pratiques</span></h2>
-
-                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {# Carte Zone #}
-                    <div class="bg-[#0a0a0a] p-8 border border-white/5 hover:border-[#C5A059]/20 transition-colors">
-                        <svg class="w-6 h-6 text-[#C5A059] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <h3 class="font-serif text-lg font-semibold mb-3 text-white">Zone d'Intervention</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed">Basé en France, je me déplace partout selon les projets.</p>
-                    </div>
-
-                    {# Carte Délais #}
-                    <div class="bg-[#0a0a0a] p-8 border border-white/5 hover:border-[#C5A059]/20 transition-colors">
-                        <svg class="w-6 h-6 text-[#C5A059] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <h3 class="font-serif text-lg font-semibold mb-3 text-white">Délais de Livraison</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed">Portraits : 7-14 jours. Événements : 3-4 semaines. Livraison express sur demande.</p>
-                    </div>
-
-                    {# Carte Paiement #}
-                    <div class="bg-[#0a0a0a] p-8 border border-white/5 hover:border-[#C5A059]/20 transition-colors">
-                        <svg class="w-6 h-6 text-[#C5A059] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        <h3 class="font-serif text-lg font-semibold mb-3 text-white">Paiement</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed">Acompte de 30% à la réservation, solde à la livraison. Virement ou PayPal acceptés.</p>
-                    </div>
-
-                    {# Carte Matériel #}
-                    <div class="bg-[#0a0a0a] p-8 border border-white/5 hover:border-[#C5A059]/20 transition-colors">
-                        <svg class="w-6 h-6 text-[#C5A059] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        <h3 class="font-serif text-lg font-semibold mb-3 text-white">Matériel Pro</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed">Équipement haut de gamme redondant pour garantir la sécurité de vos images.</p>
+                    {# CTA #}
+                    <div class="lg:col-span-3 flex flex-col justify-between items-start lg:items-end">
+                        <div class="text-right hidden lg:block">
+                            <p class="text-xs mb-1" style="color: #6b7280;">Catégorie</p>
+                            <p class="text-xs uppercase tracking-widest text-white">{{ service.category }}</p>
+                        </div>
+                        <a href="{{ path('devis') }}" class="btn-primary mt-6 lg:mt-0">
+                            Demander un devis
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
                     </div>
                 </div>
+            </article>
+        {% else %}
+            <div class="py-20 text-center border-b" style="border-color: rgba(255,255,255,0.06);">
+                <p class="text-sm italic" style="color: #6b7280;">Aucun service configuré pour le moment.</p>
             </div>
+        {% endfor %}
+    </div>
+</section>
+
+{# Infos pratiques #}
+<section class="py-24 border-t" style="background-color: #080808; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6">
+        <span class="section-label">Avant de commencer</span>
+        <h2 class="font-serif font-light text-white mb-16" style="font-size: 2rem;">Informations pratiques</h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-px" style="background-color: rgba(255,255,255,0.06);">
+
+            {% for info in practicalInfos %}
+            <div class="service-card reveal reveal-delay-{{ loop.index }}">
+                <p class="text-xs uppercase tracking-widest mb-6" style="color: #C5A059;">{{ info.label }}</p>
+                <p class="text-sm font-medium text-white mb-2">{{ info.title }}</p>
+                <p class="text-xs leading-relaxed" style="color: #6b7280;">{{ info.description }}</p>
+            </div>
+            {% else %}
+            <div class="col-span-4 py-10 text-center text-gray-600 italic text-sm">Aucune information pratique configurée.</div>
+            {% endfor %}
+
         </div>
-    </section>
+    </div>
+</section>
+
 {% endblock %}

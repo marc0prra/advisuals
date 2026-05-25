@@ -6,20 +6,17 @@ export default class extends Controller {
     filter(event) {
         const selected = event.currentTarget.dataset.filter;
 
-        // Mise à jour des boutons
+        // Mise à jour des boutons — classes CSS .filter-btn.is-active
         this.buttonTargets.forEach(btn => {
             const isActive = btn.dataset.filter === selected;
-            btn.classList.toggle('text-[#C5A059]', isActive);
-            btn.classList.toggle('border-b', isActive);
-            btn.classList.toggle('border-[#C5A059]', isActive);
-            btn.classList.toggle('pb-1', isActive);
-            btn.classList.toggle('text-gray-500', !isActive);
+            btn.classList.toggle('is-active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
 
         // Affichage/masquage des cartes
         this.cardTargets.forEach(card => {
             const category = card.dataset.category;
-            const visible = selected === 'Tout' || category === selected;
+            const visible  = selected === 'Tout' || category === selected;
             card.style.display = visible ? '' : 'none';
         });
     }

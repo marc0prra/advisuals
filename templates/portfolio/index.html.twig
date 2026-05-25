@@ -1,77 +1,86 @@
-{# templates/portfolio/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Portfolio | Ad Visuals{% endblock %}
+{% block title %}Portfolio — Adrien Mihajlovic{% endblock %}
 
 {% block body %}
-    <section class="pt-32 pb-24 bg-[#0a0a0a]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            
-            {# En-tête de page (Cahier des charges : Titres Serif pour le prestige) #}
-            <div class="max-w-6xl mx-auto text-center mb-16">
-                <h1 class="font-serif text-5xl md:text-6xl font-light mb-6 text-white tracking-tight">
-                    Mes <span class="text-[#C5A059] italic">Projets</span>
-                </h1>
-                <p class="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                    Une sélection de travaux réalisés pour des clients variés, du portrait intimiste aux campagnes commerciales internationales.
-                </p>
-            </div>
 
-            {# Filtres de galerie (Spécifications fonctionnelles : Studio, Commercial, Presse) #}
-            <div data-controller="portfolio-filter" class="flex flex-col items-center gap-6">
-                <div class="flex flex-wrap justify-center gap-6 mb-16 text-[10px] uppercase tracking-[0.3em] text-gray-500">
-                    <button data-portfolio-filter-target="button" data-filter="Tout" data-action="click->portfolio-filter#filter" class="text-[#C5A059] border-b border-[#C5A059] pb-1 hover:text-white transition-colors">Tout</button>
-                    <button data-portfolio-filter-target="button" data-filter="Studio" data-action="click->portfolio-filter#filter" class="text-gray-500 hover:text-white transition-colors">Studio</button>
-                    <button data-portfolio-filter-target="button" data-filter="Commercial" data-action="click->portfolio-filter#filter" class="text-gray-500 hover:text-white transition-colors">Commercial</button>
-                    <button data-portfolio-filter-target="button" data-filter="Presse" data-action="click->portfolio-filter#filter" class="text-gray-500 hover:text-white transition-colors">Presse</button>
+{# Hero #}
+<section class="pt-40 pb-20 border-b" style="background-color: #0a0a0a; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div>
+            <span class="section-label">Travaux</span>
+            <h1 class="font-serif font-light text-white" style="font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.05;">
+                Portfolio
+            </h1>
+        </div>
+        <p class="text-sm max-w-xs" style="color: #6b7280;">
+            Du portrait intimiste aux campagnes commerciales internationales — une sélection de mes meilleurs travaux.
+        </p>
+    </div>
+</section>
+
+{# Filtres + Grille #}
+<section class="py-16" style="background-color: #0a0a0a;" data-controller="portfolio-filter">
+
+    {# Filtres #}
+    <div class="max-w-7xl mx-auto px-6 mb-12">
+        <div class="flex flex-wrap gap-6" role="group" aria-label="Filtrer par catégorie">
+            {% for label, filter in {'Tout': 'Tout', 'Studio': 'Studio', 'Commercial': 'Commercial', 'Presse': 'Presse'} %}
+                <button
+                    data-portfolio-filter-target="button"
+                    data-filter="{{ filter }}"
+                    data-action="click->portfolio-filter#filter"
+                    class="filter-btn {{ filter == 'Tout' ? 'is-active' : '' }}"
+                    aria-pressed="{{ filter == 'Tout' ? 'true' : 'false' }}">
+                    {{ label }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Grille #}
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {% for project in projects %}
+                <article
+                    data-portfolio-filter-target="card"
+                    data-category="{{ project.category }}"
+                    class="portfolio-card bg-neutral-900"
+                    style="aspect-ratio: 3/4;"
+                >
+                    <img
+                        src="{{ project.imagePath starts with 'http' ? project.imagePath : asset(project.imagePath) }}"
+                        alt="{{ project.title }}"
+                        class="portfolio-card__img"
+                        loading="lazy"
+                        width="400"
+                        height="533"
+                    >
+                    <div class="portfolio-card__overlay">
+                        <p class="text-[10px] uppercase tracking-widest mb-1.5" style="color: #C5A059;">{{ project.category }}</p>
+                        <h2 class="font-serif text-lg font-light text-white">{{ project.title }}</h2>
+                    </div>
+                </article>
+            {% else %}
+                <div class="col-span-full py-24 text-center border border-dashed" style="border-color: rgba(255,255,255,0.08);">
+                    <p class="text-sm italic" style="color: #6b7280;">La galerie s'enrichit régulièrement.</p>
                 </div>
-
-            {# Grille de projets (Cahier des charges : 1 col mobile / 3 cols desktop) #}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 max-w-7xl mx-auto w-full">
-                {% for project in projects %}
-                    {# Effet de zoom au survol (group-hover:scale-105) #}
-                    <div data-portfolio-filter-target="card" data-category="{{ project.category }}" class="group relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5">
-                        <img
-                            src="{{ project.imagePath starts with 'http' ? project.imagePath : asset(project.imagePath) }}"
-                            alt="{{ project.title }}"
-                            class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
-                            loading="lazy"
-                        >
-                        
-                        {# Apparition des détails au survol #}
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                            <p class="text-[#C5A059] text-[10px] uppercase tracking-[0.4em] mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                {{ project.category }}
-                            </p>
-                            <h3 class="font-serif text-2xl text-white italic transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                                {{ project.title }}
-                            </h3>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="col-span-full py-20 text-center border border-dashed border-white/10">
-                        <p class="text-gray-600 italic">Plus de projets à venir — Ma galerie s'enrichit régulièrement.</p>
-                    </div>
-                {% endfor %}
-            </div>
-
-            {# Note de bas de page (Maquette : Phrase de réassurance) #}
-            <div class="mt-20 text-center w-full">
-                <p class="text-[10px] text-gray-600 uppercase tracking-[0.5em] italic">
-                    Chaque image raconte une histoire unique
-                </p>
-            </div>
-            </div>{# fin portfolio-filter controller #}
+            {% endfor %}
         </div>
-    </section>
+    </div>
 
-    {# Section Call to Action (UX de conversion linéaire) #}
-    <section class="py-24 bg-zinc-900/30 border-t border-white/5">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="font-serif text-3xl mb-8">Votre vision mérite une exigence <span class="text-[#C5A059]">sans compromis</span>.</h2>
-            <a href="{{ path('devis') }}" class="inline-block border border-[#C5A059] text-[#C5A059] px-12 py-4 uppercase text-[10px] tracking-[0.3em] font-bold hover:bg-[#C5A059] hover:text-black transition-all">
-                Démarrer un projet
-            </a>
-        </div>
-    </section>
+</section>
+
+{# CTA #}
+<section class="py-20 border-t" style="background-color: #080808; border-color: rgba(255,255,255,0.06);">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+        <p class="font-serif text-2xl font-light text-white">
+            Votre vision mérite des images à sa hauteur.
+        </p>
+        <a href="{{ path('devis') }}" class="btn-primary flex-shrink-0">
+            Démarrer un projet
+        </a>
+    </div>
+</section>
+
 {% endblock %}

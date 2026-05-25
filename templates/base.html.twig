@@ -1,86 +1,350 @@
-{# templates/base.html.twig #}
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Ad Visuals | Photographe{% endblock %}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        {# Polices : Poppins + Playfair Display #}
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Adrien Mihajlovic — Photographe{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Photographe professionnel à Paris — Portrait, Commercial, Presse. Adrien Mihajlovic.">
+    <meta name="theme-color" content="#0a0a0a">
 
-        {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
-        {% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        {% block javascripts %}
-            {{ importmap('app') }}
-        {% endblock %}
-    </head>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    {% endblock %}
 
-    <body class="bg-[#0a0a0a] text-white font-['Poppins']">
-        
-        {# NAVIGATION #}
-        <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-black/80 backdrop-blur-md border-b border-white/5">
-            <div class="container mx-auto px-4 h-20 flex items-center justify-between">
-                <a href="{{ path('home') }}" class="font-serif text-2xl font-semibold tracking-tight">AM</a>
-                
-                <div class="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-gray-400">
-                    <a href="{{ path('home') }}" class="hover:text-[#C5A059] transition-colors">Accueil</a>
-                    <a href="{{ path('about') }}" class="hover:text-[#C5A059] transition-colors">À propos</a>
-                    <a href="{{ path('services') }}" class="hover:text-[#C5A059] transition-colors">Services</a>
-                    <a href="{{ path('portfolio') }}" class="hover:text-[#C5A059] transition-colors">Portfolio</a>
-                    <a href="{{ path('devis') }}" class="border border-[#C5A059] text-[#C5A059] px-5 py-2 hover:bg-[#C5A059] hover:text-black transition-all">
+    {% block javascripts %}
+        {{ importmap('app') }}
+    {% endblock %}
+</head>
+
+<body style="background-color: #0a0a0a; color: #f0eeeb;" class="font-['Poppins'] antialiased">
+
+{# ── Skip link ─────────────────────────────── #}
+<a href="#main-content" class="skip-link">Aller au contenu</a>
+
+{# ── Navigation ───────────────────────────── #}
+{% set route = app.request.attributes.get('_route') %}
+<nav class="fixed top-0 left-0 right-0 z-50 border-b"
+     style="background-color: rgba(10,10,10,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: rgba(255,255,255,0.06);"
+     aria-label="Navigation principale">
+    <div class="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
+
+        {# Logo #}
+        <a href="{{ path('home') }}"
+           class="font-serif text-xl font-semibold tracking-wide transition-opacity hover:opacity-70"
+           style="color: #f0eeeb;"
+           aria-label="Adrien Mihajlovic — Accueil">
+            AM
+            <span class="text-xs font-sans font-normal tracking-widest uppercase ml-2"
+                  style="color: #C5A059;">Adrien Mihajlovic</span>
+        </a>
+
+        {# Desktop nav #}
+        <div class="hidden md:flex items-center gap-8">
+            {% for label, name in {
+                'Accueil'  : 'home',
+                'À propos' : 'about',
+                'Services' : 'services',
+                'Portfolio': 'portfolio'
+            } %}
+                <a href="{{ path(name) }}"
+                   class="nav-link {{ route == name ? 'is-active' : '' }}"
+                   aria-current="{{ route == name ? 'page' : 'false' }}">
+                    {{ label }}
+                </a>
+            {% endfor %}
+
+            <a href="{{ path('devis') }}"
+               class="btn-primary"
+               style="padding: 0.55rem 1.25rem; font-size: 0.65rem;">
+                Devis gratuit
+            </a>
+        </div>
+
+        {# Mobile — hamburger 2 barres (responsive uniquement) #}
+        <button
+            class="mob-toggle"
+            id="nav-toggle"
+            aria-label="Ouvrir le menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu">
+            <span class="mob-toggle__bar" aria-hidden="true"></span>
+            <span class="mob-toggle__bar" aria-hidden="true"></span>
+        </button>
+
+    </div>
+</nav>
+
+{# ── Mobile menu — overlay full-screen ───── #}
+<div class="mob-menu"
+     id="mobile-menu"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Navigation"
+     aria-hidden="true">
+
+    {# Orbe décorative #}
+    <div class="mob-menu__orb" aria-hidden="true"></div>
+
+    {# Liens de navigation #}
+    <nav class="mob-menu__nav" aria-label="Navigation mobile">
+        <a href="{{ path('home') }}"
+           class="mob-menu__item {{ route == 'home' ? 'is-active' : '' }}">
+            <span class="mob-menu__num" aria-hidden="true">01</span>
+            <span class="mob-menu__label">Accueil</span>
+        </a>
+        <a href="{{ path('about') }}"
+           class="mob-menu__item {{ route == 'about' ? 'is-active' : '' }}">
+            <span class="mob-menu__num" aria-hidden="true">02</span>
+            <span class="mob-menu__label">À propos</span>
+        </a>
+        <a href="{{ path('services') }}"
+           class="mob-menu__item {{ route == 'services' ? 'is-active' : '' }}">
+            <span class="mob-menu__num" aria-hidden="true">03</span>
+            <span class="mob-menu__label">Services</span>
+        </a>
+        <a href="{{ path('portfolio') }}"
+           class="mob-menu__item {{ route == 'portfolio' ? 'is-active' : '' }}">
+            <span class="mob-menu__num" aria-hidden="true">04</span>
+            <span class="mob-menu__label">Portfolio</span>
+        </a>
+    </nav>
+
+    {# Séparateur or #}
+    <div class="mob-menu__sep" aria-hidden="true"></div>
+
+    {# CTA principal #}
+    <a href="{{ path('devis') }}" class="mob-menu__cta">
+        Devis gratuit
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+    </a>
+
+    {# Contact / social #}
+    <div class="mob-menu__footer">
+        <a href="mailto:adrienmihajlovic.pro@gmail.com">adrienmihajlovic.pro@gmail.com</a>
+        <a href="https://instagram.com/advisuals" target="_blank" rel="noopener noreferrer">Instagram — @advisuals</a>
+    </div>
+
+</div>
+
+{# ── Flash messages ───────────────────────── #}
+<div class="fixed top-[88px] right-6 z-[70] space-y-3 w-80 pointer-events-none"
+     role="status" aria-live="polite">
+    {% for message in app.flashes('success') %}
+        <div class="pointer-events-auto px-5 py-3.5 text-sm border"
+             style="background-color: #0f1a0f; border-color: rgba(74,222,128,0.25); color: #86efac; border-radius: 4px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="pointer-events-auto px-5 py-3.5 text-sm border"
+             role="alert"
+             style="background-color: #1a0f0f; border-color: rgba(248,113,113,0.25); color: #fca5a5; border-radius: 4px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+
+<main id="main-content">{% block body %}{% endblock %}</main>
+
+{# ── Footer ───────────────────────────────── #}
+<footer class="border-t" style="background-color: #080808; border-color: rgba(255,255,255,0.06);" aria-label="Pied de page">
+    <div class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-12">
+
+        <div>
+            <p class="font-serif text-xl font-semibold mb-1" style="color: #f0eeeb;">Adrien Mihajlovic</p>
+            <p class="text-xs mb-6" style="color: #C5A059; letter-spacing: 0.2em;">PHOTOGRAPHE PROFESSIONNEL</p>
+            <p class="text-sm leading-relaxed" style="color: #6b7280;">
+                Portrait, Commercial &amp; Presse.<br>
+                Basé à Paris, disponible partout.
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs uppercase tracking-widest mb-6" style="color: #C5A059; letter-spacing: 0.25em;">Navigation</p>
+            <ul class="space-y-3 text-sm" style="color: #6b7280;">
+                <li><a href="{{ path('portfolio') }}" class="transition-colors hover:text-white">Portfolio</a></li>
+                <li><a href="{{ path('services') }}" class="transition-colors hover:text-white">Services</a></li>
+                <li><a href="{{ path('about') }}" class="transition-colors hover:text-white">À propos</a></li>
+                <li><a href="{{ path('contact') }}" class="transition-colors hover:text-white">Contact</a></li>
+                <li><a href="{{ path('devis') }}" class="transition-colors hover:text-white">Simulateur de devis</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <p class="text-xs uppercase tracking-widest mb-6" style="color: #C5A059; letter-spacing: 0.25em;">Contact</p>
+            <ul class="space-y-3 text-sm" style="color: #6b7280;">
+                <li>
+                    <a href="mailto:adrienmihajlovic.pro@gmail.com"
+                       class="transition-colors hover:text-white">
+                        adrienmihajlovic.pro@gmail.com
+                    </a>
+                </li>
+                <li>
+                    <a href="https://instagram.com/advisuals" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 transition-colors hover:text-white">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+                        </svg>
+                        @advisuals
+                    </a>
+                </li>
+                <li class="pt-2">
+                    <a href="{{ path('devis') }}" class="btn-primary" style="padding: 0.55rem 1.25rem; font-size: 0.65rem; display: inline-flex;">
                         Demander un devis
                     </a>
-                </div>
-            </div>
-        </nav>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-        <main>
-            {# ZONE DES MESSAGES FLASH #}
-            <div class="fixed top-24 right-6 z-[60] space-y-4">
-                {% for message in app.flashes('success') %}
-                    <div class="p-4 text-sm text-green-400 bg-green-900/20 border border-green-500/50 rounded-lg">
-                        <span class="font-bold">Succès :</span> {{ message }}
-                    </div>
-                {% endfor %}
-                {% for message in app.flashes('error') %}
-                    <div class="p-4 text-sm text-red-400 bg-red-900/20 border border-red-500/50 rounded-lg">
-                        <span class="font-bold">Erreur :</span> {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
+    <div class="border-t max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4"
+         style="border-color: rgba(255,255,255,0.06);">
+        <p class="text-xs" style="color: #4b5563;">
+            &copy; {{ "now"|date("Y") }} Adrien Mihajlovic — Tous droits réservés
+        </p>
+        <p class="text-xs" style="color: #374151;">
+            Réponse garantie sous 24h · Devis 100% gratuit
+        </p>
+    </div>
+</footer>
 
-            {% block body %}{% endblock %}
-        </main>
+{# ── Scroll to top ────────────────────────── #}
+<button id="scroll-top" aria-label="Retour en haut de page">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+</button>
 
-        {# FOOTER #}
-        <footer class="bg-[#050505] border-t border-white/5 py-16">
-            <div class="container mx-auto px-4 grid md:grid-cols-3 gap-12 max-w-6xl">
-                <div>
-                    <h3 class="font-serif text-2xl font-semibold mb-4 italic">Adrien Mihajlovic</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">Photographe professionnel spécialisé en portraits, reportages et photographie commerciale.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4 text-[#C5A059]">Navigation</h4>
-                    <ul class="space-y-2 text-sm text-gray-500">
-                        <li><a href="{{ path('portfolio') }}" class="hover:text-white transition-colors">Portfolio</a></li>
-                        <li><a href="{{ path('services') }}" class="hover:text-white transition-colors">Services</a></li>
-                        <li><a href="{{ path('contact') }}" class="hover:text-white transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4 text-[#C5A059]">Contact</h4>
-                    <p class="text-sm text-gray-500">adrienmihajlovic.pro@gmail.com</p>
-                    <p class="text-sm text-gray-500 mt-2">Instagram : @advisuals</p>
-                </div>
-            </div>
-            <div class="text-center mt-12 pt-8 border-t border-white/5 text-xs text-gray-600">
-                &copy; {{ "now"|date('Y') }} Adrien Mihajlovic. Tous droits réservés.
-            </div>
-        </footer>
-    </body>
+{# ══════════════════════════════════════════════
+   JAVASCRIPT
+   - Mobile nav toggle
+   - Scroll to top
+   - Framer Motion–style scroll reveal (IntersectionObserver)
+   - Magic UI number ticker
+══════════════════════════════════════════════ #}
+<script>
+(function () {
+    'use strict';
+
+    /* ─── Mobile nav ─────────────────────────── */
+    var toggle = document.getElementById('nav-toggle');
+    var menu   = document.getElementById('mobile-menu');
+
+    if (toggle && menu) {
+        function openMenu() {
+            menu.classList.add('is-open');
+            toggle.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            menu.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('nav-open');
+            /* Focus premier lien pour accessibilité */
+            var firstLink = menu.querySelector('a');
+            if (firstLink) { setTimeout(function(){ firstLink.focus(); }, 100); }
+        }
+        function closeMenu() {
+            menu.classList.remove('is-open');
+            toggle.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('nav-open');
+        }
+        toggle.addEventListener('click', function () {
+            menu.classList.contains('is-open') ? closeMenu() : openMenu();
+        });
+        /* Fermer au clic sur un lien */
+        menu.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', closeMenu);
+        });
+        /* Fermer avec Escape */
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && menu.classList.contains('is-open')) {
+                closeMenu();
+                toggle.focus();
+            }
+        });
+        /* Fermer en cliquant hors du menu (sur le fond) */
+        menu.addEventListener('click', function (e) {
+            if (e.target === menu) { closeMenu(); }
+        });
+    }
+
+    /* ─── Scroll to top ──────────────────────── */
+    var scrollBtn = document.getElementById('scroll-top');
+    if (scrollBtn) {
+        window.addEventListener('scroll', function () {
+            scrollBtn.classList.toggle('is-visible', window.scrollY > 500);
+        }, { passive: true });
+        scrollBtn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    /* ─── Framer Motion — Scroll Reveal ─────────
+       Mimics blur-fade + slide-up from Framer Motion
+    ─────────────────────────────────────────────── */
+    var revealEls = document.querySelectorAll('.reveal');
+    if (revealEls.length && 'IntersectionObserver' in window) {
+        var revealObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        revealEls.forEach(function (el) {
+            revealObserver.observe(el);
+        });
+    } else {
+        /* Fallback: show immediately */
+        revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+    }
+
+    /* ─── Magic UI — Number Ticker ──────────────
+       Animates counters when they enter viewport
+    ─────────────────────────────────────────────── */
+    var tickers = document.querySelectorAll('.number-ticker[data-target]');
+    if (tickers.length && 'IntersectionObserver' in window) {
+        var tickerObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var el     = entry.target;
+                var target = parseInt(el.dataset.target, 10);
+                var start  = 0;
+                var duration = 1400;
+                var startTime = null;
+
+                function step(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    var progress = Math.min((timestamp - startTime) / duration, 1);
+                    /* Ease out cubic */
+                    var eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.floor(eased * target);
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        el.textContent = target;
+                    }
+                }
+                requestAnimationFrame(step);
+                tickerObserver.unobserve(el);
+            });
+        }, { threshold: 0.5 });
+
+        tickers.forEach(function (el) { tickerObserver.observe(el); });
+    }
+
+}());
+</script>
+
+</body>
 </html>

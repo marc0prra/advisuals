@@ -1,0 +1,178 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Témoignages — Backoffice{% endblock %}
+{% block page_title %}Témoignages{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;" class="a-reveal">
+    <p style="font-size:13px;color:hsl(0 0% 45%);">{{ testimonials|length }} témoignage(s) — max 3 en avant</p>
+    <a href="{{ path('admin_testimonial_new') }}" class="btn-gold">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nouveau témoignage
+    </a>
+</div>
+
+{# Featured slots #}
+<div class="admin-card a-reveal" style="margin-bottom:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+                <h2 style="font-size:14px;font-weight:600;color:#fff;">Témoignages mis en avant</h2>
+            </div>
+            <p style="font-size:12px;color:hsl(0 0% 42%);margin-left:13px;">Glissez depuis la liste vers les 3 slots.</p>
+        </div>
+        <button id="save-featured-btn" class="btn-gold" disabled
+                style="opacity:.4;cursor:not-allowed;">
+            Sauvegarder
+        </button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="featured-slots">
+        {% for i in 1..3 %}
+            {% set ft = testimonials|filter(t => t.isFeatured and t.featuredPosition == i)|first %}
+            <div class="featured-slot"
+                 data-slot="{{ i }}"
+                 style="min-height:96px;padding:12px;border-radius:10px;border:1.5px dashed hsl(0 0% 16%);position:relative;transition:border-color .15s,background .15s;"
+                 ondragover="slotOver(event,this)"
+                 ondragleave="slotLeave(this)"
+                 ondrop="slotDrop(event,this)">
+                {% if ft is defined and ft %}
+                <div class="feat-card" data-id="{{ ft.id }}"
+                     style="height:100%;">
+                    <p style="font-size:12px;font-weight:600;color:#e5e5e5;margin-bottom:2px;">{{ ft.author }}</p>
+                    <p style="font-size:11px;color:hsl(0 0% 42%);">{{ ft.role }}</p>
+                    <p style="font-size:11px;color:hsl(0 0% 52%);margin-top:6px;line-height:1.5;">{{ ft.quote|slice(0,65) }}…</p>
+                    <button onclick="removeSlot(this)"
+                            style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:4px;background:hsl(0 0% 10%);border:1px solid hsl(0 0% 16%);color:hsl(0 0% 45%);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;">✕</button>
+                </div>
+                {% else %}
+                <p style="font-size:12px;color:hsl(0 0% 28%);text-align:center;padding-top:28px;">Slot {{ i }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{# All testimonials #}
+<div class="admin-card a-reveal a-reveal-d1">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="width:3px;height:18px;background:#C5A059;border-radius:2px;"></div>
+        <h2 style="font-size:14px;font-weight:600;color:#fff;">Tous les témoignages</h2>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        {% for t in testimonials %}
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:hsl(0 0% 7%);border:1px solid hsl(0 0% 12%);border-radius:8px;cursor:grab;"
+             draggable="true"
+             data-id="{{ t.id }}"
+             data-author="{{ t.author }}"
+             data-role="{{ t.role }}"
+             data-quote="{{ t.quote|slice(0,65) }}"
+             ondragstart="listDragStart(event,this)">
+
+            <div style="flex-shrink:0;color:#C5A059;font-size:11px;letter-spacing:.05em;">
+                {% for s in 1..t.rating %}★{% endfor %}
+            </div>
+
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <p style="font-size:13px;font-weight:500;color:#e5e5e5;">{{ t.author }}</p>
+                    <span style="font-size:11px;color:hsl(0 0% 42%);">— {{ t.role }}</span>
+                    {% if t.isFeatured %}<span class="badge-gold">En avant</span>{% endif %}
+                </div>
+                <p style="font-size:11px;color:hsl(0 0% 50%);margin-top:3px;" class="truncate">{{ t.quote|slice(0,80) }}…</p>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+                <a href="{{ path('admin_testimonial_edit', {id: t.id}) }}" class="btn-ghost"
+                   style="font-size:12px;padding:6px 12px;">Modifier</a>
+                <button type="button" class="btn-danger"
+                        onclick="openDeleteModal({action:'{{ path('admin_testimonial_delete', {id: t.id}) }}', description:'Supprimer le témoignage de {{ t.author|e('js') }} ?'})">
+                    Supprimer
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <p style="text-align:center;padding:32px;font-size:13px;color:hsl(0 0% 35%);">Aucun témoignage.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+let draggingData = null;
+
+function listDragStart(e, el) {
+    draggingData = {
+        id: el.dataset.id, author: el.dataset.author,
+        role: el.dataset.role, quote: el.dataset.quote
+    };
+    e.dataTransfer.effectAllowed = 'copy';
+}
+function slotOver(e, slot) {
+    e.preventDefault();
+    slot.style.borderColor = '#C5A059';
+    slot.style.background = 'rgba(197,160,89,.04)';
+}
+function slotLeave(slot) {
+    slot.style.borderColor = '';
+    slot.style.background = '';
+}
+function slotDrop(e, slot) {
+    e.preventDefault();
+    slot.style.borderColor = '';
+    slot.style.background = '';
+    if (!draggingData) return;
+
+    const all = document.querySelectorAll('.featured-slot');
+    const alreadyIn = [...all].some(s => s.querySelector('.feat-card')?.dataset.id === draggingData.id);
+    const filled = [...all].filter(s => s.querySelector('.feat-card')).length;
+
+    if (!alreadyIn && filled >= 3) { alert('Maximum 3 témoignages en avant.'); draggingData = null; return; }
+
+    // Remove from other slots
+    all.forEach(s => {
+        if (s.querySelector('.feat-card')?.dataset.id === draggingData.id)
+            s.innerHTML = `<p style="font-size:12px;color:hsl(0 0% 28%);text-align:center;padding-top:28px;">Slot ${s.dataset.slot}</p>`;
+    });
+
+    const d = draggingData;
+    slot.innerHTML = `
+        <div class="feat-card" data-id="${d.id}" style="height:100%;">
+            <p style="font-size:12px;font-weight:600;color:#e5e5e5;margin-bottom:2px;">${d.author}</p>
+            <p style="font-size:11px;color:hsl(0 0% 42%);">${d.role}</p>
+            <p style="font-size:11px;color:hsl(0 0% 52%);margin-top:6px;line-height:1.5;">${d.quote}…</p>
+            <button onclick="removeSlot(this)"
+                    style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:4px;background:hsl(0 0% 10%);border:1px solid hsl(0 0% 16%);color:hsl(0 0% 45%);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;">✕</button>
+        </div>`;
+
+    enableSave();
+    draggingData = null;
+}
+function removeSlot(btn) {
+    const slot = btn.closest('.featured-slot');
+    slot.innerHTML = `<p style="font-size:12px;color:hsl(0 0% 28%);text-align:center;padding-top:28px;">Slot ${slot.dataset.slot}</p>`;
+    enableSave();
+}
+function enableSave() {
+    const btn = document.getElementById('save-featured-btn');
+    btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = '';
+}
+
+document.getElementById('save-featured-btn').addEventListener('click', async () => {
+    const ids = [...document.querySelectorAll('.featured-slot')].map(s => {
+        const c = s.querySelector('.feat-card');
+        return c ? +c.dataset.id : null;
+    }).filter(Boolean);
+    const btn = document.getElementById('save-featured-btn');
+    btn.textContent = '…'; btn.disabled = true;
+    const res = await fetch('{{ path('admin_testimonials_save_featured') }}', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(ids)
+    });
+    if (res.ok) {
+        btn.textContent = '✓ Sauvegardé';
+        showToast('Témoignages mis à jour.', 'success');
+        setTimeout(() => { btn.textContent = 'Sauvegarder'; btn.disabled = true; btn.style.opacity = '.4'; btn.style.cursor = 'not-allowed'; }, 2500);
+    } else { btn.textContent = 'Erreur'; btn.disabled = false; }
+});
+</script>
+{% endblock %}

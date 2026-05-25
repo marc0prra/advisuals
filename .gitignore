@@ -18,3 +18,8 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Uploads — les fichiers sont locaux, seul le dossier est versionné (.gitkeep)
+/public/uploads/**
+!/public/uploads/.gitkeep
+!/public/uploads/projects/.gitkeep

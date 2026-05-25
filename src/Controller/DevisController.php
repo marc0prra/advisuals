@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DevisController extends AbstractController
@@ -21,7 +23,7 @@ class DevisController extends AbstractController
     }
 
     #[Route('/devis/submit', name: 'devis_submit', methods: ['POST'])]
-    public function submit(Request $request, EntityManagerInterface $em, ServiceRepository $serviceRepository): Response
+    public function submit(Request $request, EntityManagerInterface $em, ServiceRepository $serviceRepository, MailerInterface $mailer): Response
     {
         $clientName  = trim($request->request->get('client_name', ''));
         $clientEmail = trim($request->request->get('client_email', ''));
@@ -43,6 +45,30 @@ class DevisController extends AbstractController
 
             $em->persist($estimateRequest);
             $em->flush();
+
+            $serviceLabel = '';
+            if ($serviceId) {
+                $svc = $serviceRepository->find($serviceId);
+                $serviceLabel = $svc ? $svc->getLabel() : '';
+            }
+
+            try {
+                $adminMail = (new Email())
+                    ->from('noreply@advisuals.fr')
+                    ->to('adrienmihajlovic.pro@gmail.com')
+                    ->replyTo($clientEmail)
+                    ->subject("Nouvelle demande de devis — $clientName")
+                    ->text(implode("\n", [
+                        "Client : $clientName",
+                        "Email  : $clientEmail",
+                        "Tél    : $clientPhone",
+                        "Service: $serviceLabel",
+                        "Total  : {$total} €",
+                        "",
+                        $message,
+                    ]));
+                $mailer->send($adminMail);
+            } catch (\Throwable) {}
 
             $this->addFlash('devis_success', 'Votre demande a bien été envoyée ! Nous vous contacterons sous 24h.');
         }

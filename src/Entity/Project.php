@@ -26,6 +26,20 @@ class Project
     #[ORM\Column]
     private bool $isFeatured = false;
 
+    /** Ordre d'affichage dans la grille featured (1-6) */
+    #[ORM\Column(nullable: true)]
+    private ?int $featuredPosition = null;
+
+    /**
+     * Taille dans la grille d'accueil.
+     * 'normal' = 1 colonne | 'wide' = 2 colonnes
+     */
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $featuredSize = 'normal';
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -33,6 +47,7 @@ class Project
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->isFeatured = false;
+        $this->featuredSize = 'normal';
     }
 
     public function getId(): ?int
@@ -94,4 +109,13 @@ class Project
         $this->createdAt = $createdAt;
         return $this;
     }
+
+    public function getFeaturedPosition(): ?int { return $this->featuredPosition; }
+    public function setFeaturedPosition(?int $featuredPosition): static { $this->featuredPosition = $featuredPosition; return $this; }
+
+    public function getFeaturedSize(): ?string { return $this->featuredSize ?? 'normal'; }
+    public function setFeaturedSize(?string $featuredSize): static { $this->featuredSize = $featuredSize; return $this; }
+
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(?string $description): static { $this->description = $description; return $this; }
 }

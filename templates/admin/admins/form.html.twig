@@ -1,68 +1,50 @@
 {% extends 'admin/base.html.twig' %}
-
-{% block title %}{{ admin ? 'Modifier' : 'Nouvel' }} admin — Backoffice AD Visuals{% endblock %}
+{% block title %}{{ admin ? 'Modifier' : 'Nouvel' }} admin — Backoffice{% endblock %}
 {% block page_title %}{{ admin ? 'Modifier un administrateur' : 'Nouvel administrateur' }}{% endblock %}
 
 {% block content %}
+<div class="a-reveal">
 
-<div class="max-w-lg">
-    <div class="rounded-xl border border-gray-800 p-8" style="background-color: #0d0d0d;">
-        <form method="post" action="{{ action }}" class="space-y-6">
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_form') }}">
+    <a href="{{ path('app_admin_admins') }}" data-turbo="false" class="btn-ghost" style="margin-bottom:28px;display:inline-flex;gap:6px;align-items:center;">
+        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Retour aux admins
+    </a>
+
+    <form method="post" action="{{ action }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_form') }}">
+
+        <div class="admin-card" style="display:flex;flex-direction:column;gap:18px;">
 
             <div>
-                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    required
-                    value="{{ admin ? admin.email : '' }}"
-                    class="w-full px-4 py-3 rounded-lg text-white placeholder-gray-600 border border-gray-700 focus:border-yellow-600 focus:outline-none transition-colors"
-                    style="background-color: #1a1a1a;"
-                    placeholder="admin@example.com"
-                >
+                <label class="admin-label" for="email">Email <span>*</span></label>
+                <input class="admin-input" type="email" id="email" name="email" required
+                       value="{{ admin ? admin.email : '' }}"
+                       placeholder="admin@exemple.com">
             </div>
 
             <div>
-                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">
-                    Mot de passe {% if admin %}<span class="normal-case text-gray-600">(laisser vide pour ne pas changer)</span>{% endif %}
+                <label class="admin-label" for="password">
+                    Mot de passe
+                    {% if not admin %}<span>*</span>{% else %}<span style="color:hsl(0 0% 35%);font-weight:400;">(laisser vide pour conserver)</span>{% endif %}
                 </label>
-                <input
-                    type="password"
-                    name="password"
-                    {% if not admin %}required{% endif %}
-                    class="w-full px-4 py-3 rounded-lg text-white placeholder-gray-600 border border-gray-700 focus:border-yellow-600 focus:outline-none transition-colors"
-                    style="background-color: #1a1a1a;"
-                    placeholder="••••••••"
-                >
+                <input class="admin-input" type="password" id="password" name="password"
+                       {% if not admin %}required{% endif %}
+                       placeholder="••••••••">
             </div>
 
             <div>
-                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Rôle</label>
-                <select
-                    name="role"
-                    class="w-full px-4 py-3 rounded-lg text-white border border-gray-700 focus:border-yellow-600 focus:outline-none transition-colors"
-                    style="background-color: #1a1a1a;"
-                >
+                <label class="admin-label" for="role">Rôle</label>
+                <select class="admin-select" id="role" name="role">
                     <option value="ROLE_ADMIN" {% if not admin or 'ROLE_ADMIN' in admin.roles %}selected{% endif %}>ROLE_ADMIN</option>
                 </select>
             </div>
 
-            <div class="flex gap-3 pt-2">
-                <button
-                    type="submit"
-                    class="px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-colors"
-                    style="background-color: #C5A059; color: #0a0a0a;"
-                >
-                    {{ admin ? 'Enregistrer' : 'Créer' }}
-                </button>
-                <a href="{{ path('app_admin_admins') }}"
-                   class="px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded border border-gray-600 text-gray-400 hover:text-white transition-colors">
-                    Annuler
-                </a>
+            <div style="display:flex;gap:10px;padding-top:4px;">
+                <button type="submit" class="btn-gold">{{ admin ? 'Enregistrer' : 'Créer le compte' }}</button>
+                <a href="{{ path('app_admin_admins') }}" data-turbo="false" class="btn-ghost">Annuler</a>
             </div>
-        </form>
-    </div>
-</div>
 
+        </div>
+    </form>
+</div>
 {% endblock %}
