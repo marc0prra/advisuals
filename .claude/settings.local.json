@@ -17,7 +17,11 @@
       "Bash(Out-Null)",
       "Bash(New-Item -ItemType File -Force \"C:\\\\xampp\\\\htdocs\\\\symfony\\\\advisuals\\\\public\\\\uploads\\\\.gitkeep\")",
       "Bash(New-Item -ItemType File -Force \"C:\\\\xampp\\\\htdocs\\\\symfony\\\\advisuals\\\\public\\\\uploads\\\\projects\\\\.gitkeep\")",
-      "PowerShell(New-Item *)"
+      "PowerShell(New-Item *)",
+      "Bash(mysql *)",
+      "Bash(/Applications/MAMP/Library/bin/mysql *)",
+      "Read(//Applications/MAMP/**)",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql *)"
     ]
   }
 }
